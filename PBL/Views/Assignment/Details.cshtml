@@ -1,0 +1,80 @@
+﻿@model AssignmentViewModel
+
+<center><h1>@Model.AssignmentName</h1></center>
+
+<p><strong>Due Date:</strong> @Model.AssignmentDueDate.ToShortDateString()</p>
+<p><strong>Is Completed:</strong> @(Model.AssignmentIsCompleted ? "Yes" : "No")</p>
+<p><strong>Project:</strong> @Model.ProjectName</p>
+<p><strong>Details:</strong>@Model.AssignmentDescription</p>
+@if (Model.AssignmentGrade != 0)
+{
+    <p><strong>Grade:</strong>@Model.AssignmentGrade</p>
+}
+else
+{
+        <p><strong>Grade: </strong> Not graded yet.</p>
+}
+
+@if (Model?.Comments != null && Model.Comments.Count > 0)
+
+{
+    
+    <h2>Comments:</h2>
+    <hr />
+    @foreach (var comment in Model.Comments)
+    {
+
+        <div class="table">
+            <div class="d-table-cell col-12">
+                <strong style="color:white">@comment.CreatedBy</strong> <p style="margin-left:2px;color:darkgrey" class="d-inline"><font size="1"> @comment.CreatedAt</font></p>
+                <p style="margin-top:2px;color:white">@comment.CommentText</p>
+            </div>
+            <div class="d-table-cell">
+                <form asp-controller="Comment" asp-action="DeleteComment" method="post" style="display:inline-table" class="delete-btn">
+                    <input type="hidden" name="commentId" value="@comment.CommentId" />
+                    <input type="hidden" name="view" value="AssignmentDetails" />
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                </form>
+            </div>
+        </div>
+    }
+
+}
+else
+{
+    <p>
+        No comments
+    </p>
+}
+
+<form asp-controller="Comment" asp-action="AddComment" method="post">
+    <input type="hidden" name="assignmentId" value="@Model.AssignmentId" />
+    
+
+    <div class="form-group col-4">
+        <label for="text">Add a comment:</label>
+        <textarea class="form-control bg-black col-4" style="color:white" id="text" name="text"></textarea>
+    </div>
+
+    <button type="submit" class="btn btn-dark">Add Comment</button>
+</form>
+
+
+@* Add any additional properties you want to display here *@
+<div style="padding-top:15px">
+    <h4 class="mb-2">Grade Assignment</h4>
+    <hr />
+    <form asp-action="GradeAssignment" asp-route-assignmentId="@Model.AssignmentId" method="post">
+        <div class="form-group col-1">
+            <label asp-for="AssignmentGrade" class="control-label col-6 bg-black"></label>
+            <input asp-for="AssignmentGrade" class="form-control col-6 bg-black" style="color:white;background-color:black" value=""/>
+            <span asp-validation-for="AssignmentGrade" class="text-danger col-6"></span>
+        </div>
+        <div class="form-group">
+            <input type="submit" value="Grade" class="btn btn-dark col-1" />
+        </div>
+    </form>
+</div>
+<div class="mt-auto p-2 bd-highlight">
+    <a class="btn btn-secondary col-12" asp-controller="Project" asp-action="Details" asp-route-id="@Model.ProjectId">Back to project</a>
+</div>

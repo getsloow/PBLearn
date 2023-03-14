@@ -1,0 +1,41 @@
+﻿@model IEnumerable<Project>
+
+<center><h1>Your currently assigned projects</h1>
+   
+<a asp-action="Create" class="btn btn-dark col-6">Create New Project</a>
+    <p>To see details for a specific project, click the card with its name</p>
+</center>
+ <hr/>
+<div class="ag-format-container">
+    <div class="ag-courses_box">
+
+        @foreach (var project in Model)
+        {
+             
+
+            <div class="ag-courses_item">
+                <a asp-action="Details" asp-route-id="@project.Id" class="ag-courses-item_link">
+                    <div class="ag-courses-item_bg"></div>
+
+                    <div class="ag-courses-item_title">
+                        @project.Name
+                    </div>
+                    </a>
+                    <div class="ag-courses-item_date-box">
+                        Due:
+                        <span class="ag-courses-item_date">
+                            @project.EndDate
+                        </span>
+                    </div>
+
+                <a class="ag-courses-item_date" asp-controller="Assignment" asp-action="Create" asp-route-projectId="@project.Id">&nbsp;&nbsp;Create Assignment</a>
+                | <a class="ag-courses-item_date" asp-controller="Project" asp-action="Delete" asp-route-id="@project.Id">Delete Project</a>
+            </div>
+        }
+
+        
+
+        
+
+    </div>
+</div>

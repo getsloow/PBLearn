@@ -1,0 +1,126 @@
+﻿@model ProjectDetailsViewModel
+
+
+<center><h1>@Model.ProjectName</h1></center>
+
+
+<p><strong>Start Date:</strong> @Model.ProjectStartDate.ToShortDateString()
+    <br/><strong>End Date:</strong>:@Model.ProjectEndDate.ToShortDateString()</p>
+
+
+<p><strong>Project Description: <br/><br/></strong>@Model.ProjectDescription</p>
+@if (Model.ProjectGrade != 0)
+    {
+        <p><strong>Grade:</strong>@Model.ProjectGrade</p>
+    }
+else
+{
+    <p><strong>Grade: </strong> Not graded yet.</p>
+}
+<br/>
+
+@if (Model?.Assignments?.Count > 0)
+{
+    <h2>Assignments:</h2>
+    <hr/>
+    <p>For details about a certain assignment, please click the bubble below, corresponding to your desired selection.</p>
+     <ul class="progress-indicator"> 
+            @foreach (var assignment in Model.Assignments)
+            {
+                @if (assignment.AssignmentIsCompleted == true )
+                    {
+                   <li class="completed">
+                    <a asp-controller="Assignment" asp-action="Details" asp-route-id="@assignment.AssignmentId">
+                        <span class="bubble">
+                           
+                        </span>
+                    </a>
+                            @assignment.AssignmentName
+                   
+                    </li>
+                    }
+                else
+            {
+                <li class="danger">
+                    <a asp-controller="Assignment" asp-action="Details" asp-route-id="@assignment.AssignmentId" style="text-decoration:none">
+                        <span class="bubble">
+                        </span>
+                     </a>
+                    @assignment.AssignmentName
+                               
+                </li>
+            }
+                
+            }
+     </ul>
+     <p>Thank you!</p>
+}
+else
+{
+    <p>No assignments found.</p>
+}
+
+<br/>
+<br/>
+
+@if(Model?.Comments != null && Model.Comments.Count > 0)
+   
+{
+        <h2>Comments:</h2>
+        <hr/>
+    @foreach (var comment in Model.Comments)
+    {  
+        
+        <div class="table">
+            <div class="d-table-cell col-12">
+        <strong style="color:white">@comment.CreatedBy</strong> <p style="margin-left:2px;color:darkgrey" class="d-inline" ><font size="1"> @comment.CreatedAt</font></p>
+        <p style="margin-top:2px;color:white">@comment.CommentText</p>
+            </div>
+        <div class="d-table-cell">
+        <form asp-controller="Comment" asp-action="DeleteComment" method="post" style="display:inline-table" class="delete-btn">
+            <input type="hidden" name="commentId" value="@comment.CommentId" />
+                    <input type="hidden" name="view" value="ProjectDetails" />
+            <button type="submit" class="btn btn-danger">Delete</button>
+        </form>
+                </div>
+        </div>
+    }
+
+}
+else
+{
+    <p>
+        No comments</p>
+}
+
+<form asp-controller="Comment" asp-action="AddComment" method="post">
+    <input type="hidden" name="projectId" value="@Model.ProjectId" />
+
+    <div class="form-group col-4">
+        <label for="text">Add a comment:</label>
+        <textarea class="form-control bg-black col-4" style="color:white" id="text" name="text"></textarea>
+    </div>
+
+    <button type="submit" class="btn btn-dark">Add Comment</button>
+</form>
+
+<div style="padding-top:15px">
+    <h4 class="mb-2">Grade Project</h4>
+    <hr />
+    Use this text box to offer a grade after the submissions. For decimal precision please use the <strong>.</strong> (e.g. 7.4)
+    <br/>
+    <form asp-action="Grade" asp-route-projectId="@Model.ProjectId" method="post">
+        <div class="form-group col-1 ">
+            <label asp-for="ProjectGrade" class="control-label col-6 bg-black"> Grade: </label>
+            <input asp-for="ProjectGrade" class="form-control col-6 bg-black" style="color:white;background-color:black" value="" />
+            <span asp-validation-for="ProjectGrade" class="text-danger col-6"></span>
+        </div>
+        <div class="form-group">
+            <input type="submit" value="Grade" class="btn btn-dark col-1" />
+        </div>
+    </form>
+</div>
+
+<div class="mt-auto p-2 bd-highlight">
+    <a asp-action="Index" class="btn col-12 btn-secondary ">Back to List</a>
+</div>
