@@ -11,3 +11,13 @@
     </div>
     <button type="submit" class="btn btn-primary">Upload</button>
 </form>
+
+
+@if (User.IsInRole("Teacher"))
+{
+    <div class="form-group">
+        <label for="userId">Select User:</label>
+        @Html.DropDownListFor(m => m.ContentType, (IEnumerable<SelectListItem>)ViewBag.UserList, "-- Select User --", new { @class = "form-control" })
+    </div>
+
+}

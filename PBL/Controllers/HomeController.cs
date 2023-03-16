@@ -1,4 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 using PBL.Data;
 using PBL.Models;
 using System.Diagnostics;
@@ -7,17 +10,52 @@ namespace PBL.Controllers
 {
     public class HomeController : Controller
     {
+        private readonly UserManager<IdentityUser> _userManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
         private readonly ILogger<HomeController> _logger;
         private readonly ApplicationDbContext _context;
 
-        public HomeController(ILogger<HomeController> logger, ApplicationDbContext context)
+        public HomeController(ILogger<HomeController> logger, ApplicationDbContext context,RoleManager<IdentityRole> role, UserManager<IdentityUser> userManager)
         {
             _logger = logger;
             _context=context;
+            _userManager = userManager;
+            _roleManager = role;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> IndexAsync()
         {
+            var role = new IdentityRole { Name = "Teacher" };
+            var result = await _roleManager.CreateAsync(role);
+
+            var usr = await _userManager.FindByEmailAsync("profesor@test.com");
+            var rol = await _userManager.FindByNameAsync("Teacher");
+
+
+            if (usr != null && role != null)
+            {
+                var resultat = await _userManager.AddToRoleAsync(usr, role.Name);
+
+                if (resultat.Succeeded)
+                {
+                    Console.WriteLine("e admin");
+                }
+                else
+                {
+                    // Failed to add role to user, check the errors in result.Errors
+                }
+            }
+
+            var users = await _userManager.Users.ToListAsync();
+            var userList = new List<SelectListItem>();
+
+            foreach (var user in users)
+            {
+                userList.Add(new SelectListItem() { Value = user.Id, Text = user.UserName });
+            }
+
+            ViewBag.UserList = userList;
+
             return View();
         }
 

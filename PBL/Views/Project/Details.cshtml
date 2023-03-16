@@ -25,6 +25,7 @@
 <hr/>
 
 <h2>
+    @*@Model.AssignedTo*@
     <strong>Project Description: <br /><br /></strong></h2>@Model.ProjectDescription
 
 <hr/>
@@ -105,7 +106,7 @@ else
 }
 
 <form asp-controller="Comment" asp-action="AddComment" method="post">
-    <input type="hidden" name="projectId" value="@Model.ProjectId" />
+    <input type="hidden" name="projectId" value="@Model?.ProjectId" />
 
     <div class="form-group col-4">
         <label for="text">Add a comment:</label>
@@ -115,23 +116,25 @@ else
     <button type="submit" class="btn btn-dark">Add Comment</button>
 </form>
 
-<div style="padding-top:15px">
-    <h4 class="mb-2">Grade Project</h4>
-    <hr />
-    Use this text box to offer a grade after the submissions. For decimal precision please use the <strong>.</strong> (e.g. 7.4)
-    <br/>
-    <form asp-action="Grade" asp-route-projectId="@Model.ProjectId" method="post">
-        <div class="form-group col-1 ">
-            <label asp-for="ProjectGrade" class="control-label col-6 bg-black"> Grade: </label>
-            <input asp-for="ProjectGrade" class="form-control col-6 bg-black" style="color:white;background-color:black" value="" />
-            <span asp-validation-for="ProjectGrade" class="text-danger col-6"></span>
-        </div>
-        <div class="form-group">
-            <input type="submit" value="Grade" class="btn btn-dark col-1" />
-        </div>
-    </form>
-</div>
-
+@if (User.IsInRole("Teacher"))
+{
+    <div style="padding-top:15px">
+        <h4 class="mb-2">Grade Project</h4>
+        <hr />
+        Use this text box to offer a grade after the submissions. For decimal precision please use the <strong>.</strong> (e.g. 7.4)
+        <br/>
+        <form asp-action="Grade" asp-route-projectId="@Model.ProjectId" method="post">
+            <div class="form-group col-1 ">
+                <label asp-for="ProjectGrade" class="control-label col-6 bg-black"> Grade: </label>
+                <input asp-for="ProjectGrade" class="form-control col-6 bg-black" style="color:white;background-color:black" value="" />
+                <span asp-validation-for="ProjectGrade" class="text-danger col-6"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Grade" class="btn btn-dark col-1" />
+            </div>
+        </form>
+    </div>
+}
 <div class="mt-auto p-2 bd-highlight">
     <a asp-action="Index" class="btn col-12 btn-secondary ">Back to List</a>
 </div>

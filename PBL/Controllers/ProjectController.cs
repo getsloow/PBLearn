@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using PBL.Data;
 using PBL.Models;
@@ -20,12 +21,14 @@ namespace PBL.Controllers
         }
 
         // GET: Project/Create
+        [Authorize(Roles = "Profesor")]
         public IActionResult Create()
         {
             return View();
         }
         // POST: Project/Create
         [HttpPost]
+        [Authorize(Roles = "Profesor")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Name,Description,StartDate,EndDate")] Project project)
         {
@@ -37,6 +40,8 @@ namespace PBL.Controllers
             }
             return View(project);
         }
+
+        [Authorize(Roles = "Profesor")]
         public async Task<IActionResult> Grade(int projectId, float ProjectGrade)
         {
             var project = await _context.Projects.FindAsync(projectId);
@@ -51,6 +56,7 @@ namespace PBL.Controllers
             return RedirectToAction("Details", "Project", new { id = project.Id });
         }
 
+        [Authorize(Roles = "Profesor")]
         public async  Task<IActionResult> Delete(int? id)
         {
 #pragma warning disable CS8620 // Argument cannot be used for parameter due to differences in the nullability of reference types.
@@ -72,7 +78,7 @@ namespace PBL.Controllers
                 ProjectGrade= project.Grade,
                 ProjectStartDate = project.StartDate,
                 ProjectEndDate = project.EndDate,
-                Assignments = project.Assignments.Select(a => new AssignmentViewModel
+                Assignments = project.Assignments?.Select(a => new AssignmentViewModel
                 {
                     AssignmentId = a.Id,
                     AssignmentName = a.Name,
@@ -81,7 +87,7 @@ namespace PBL.Controllers
                     AssignmentIsCompleted = a.IsCompleted
                 }
                 ).ToList(),
-                Comments = project.Comments.Select(c => new CommentViewModel
+                Comments = project.Comments?.Select(c => new CommentViewModel
                 {
                   CommentId = c.Id,
                   CommentText = c.Text,
@@ -96,6 +102,7 @@ namespace PBL.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Profesor")]
         public async Task<IActionResult> Delete(int id)
         {
             var project = await _context.Projects.FindAsync(id);
@@ -108,10 +115,10 @@ namespace PBL.Controllers
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
-    
 
 
-    public async Task<IActionResult>Details(int? id)
+        //[Authorize(Roles = "Profesor")]
+        public async Task<IActionResult>Details(int? id)
         {
             if (id == null || _context.Projects == null)
             {

@@ -59,22 +59,24 @@ else
     <button type="submit" class="btn btn-dark">Add Comment</button>
 </form>
 
-
-@* Add any additional properties you want to display here *@
-<div style="padding-top:15px">
-    <h4 class="mb-2">Grade Assignment</h4>
-    <hr />
-    <form asp-action="GradeAssignment" asp-route-assignmentId="@Model.AssignmentId" method="post">
-        <div class="form-group col-1">
-            <label asp-for="AssignmentGrade" class="control-label col-6 bg-black"></label>
-            <input asp-for="AssignmentGrade" class="form-control col-6 bg-black" style="color:white;background-color:black" value=""/>
-            <span asp-validation-for="AssignmentGrade" class="text-danger col-6"></span>
-        </div>
-        <div class="form-group">
-            <input type="submit" value="Grade" class="btn btn-dark col-1" />
-        </div>
-    </form>
-</div>
+@if (User.IsInRole("Teacher"))
+{
+    @* Add any additional properties you want to display here *@
+    <div style="padding-top:15px">
+        <h4 class="mb-2">Grade Assignment</h4>
+        <hr />
+        <form asp-action="GradeAssignment" asp-route-assignmentId="@Model.AssignmentId" method="post">
+            <div class="form-group col-1">
+                <label asp-for="AssignmentGrade" class="control-label col-6 bg-black"></label>
+                <input asp-for="AssignmentGrade" class="form-control col-6 bg-black" style="color:white;background-color:black" value=""/>
+                <span asp-validation-for="AssignmentGrade" class="text-danger col-6"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Grade" class="btn btn-dark col-1" />
+            </div>
+        </form>
+    </div>
+}
 <div class="mt-auto p-2 bd-highlight">
     <a class="btn btn-secondary col-12" asp-controller="Project" asp-action="Details" asp-route-id="@Model.ProjectId">Back to project</a>
 </div>
