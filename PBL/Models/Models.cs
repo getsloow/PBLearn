@@ -11,6 +11,8 @@ namespace PBL.Models
         public float? Grade { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
+        //public string? File { get; set; } // Add this property
+
         public List<Assignment>? Assignments { get; set; }
         public List<Comment>? Comments { get; set; }
     }

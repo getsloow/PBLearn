@@ -1,28 +1,39 @@
 ﻿@model ProjectDetailsViewModel
 
 
-<center><h1>@Model.ProjectName</h1></center>
+<center><h1>@Model.ProjectName</h1>
 
-
-<p><strong>Start Date:</strong> @Model.ProjectStartDate.ToShortDateString()
-    <br/><strong>End Date:</strong>:@Model.ProjectEndDate.ToShortDateString()</p>
-
-
-<p><strong>Project Description: <br/><br/></strong>@Model.ProjectDescription</p>
-@if (Model.ProjectGrade != 0)
+    @if (Model.ProjectGrade != 0)
     {
         <p><strong>Grade:</strong>@Model.ProjectGrade</p>
     }
-else
-{
-    <p><strong>Grade: </strong> Not graded yet.</p>
-}
-<br/>
+    else
+    {
+        <p><strong>Grade: </strong> Not graded yet.</p>
+    }
+    <br />
+
+</center>
+
+
+
+    <p>
+        <strong>Start Date: @Model.ProjectStartDate.ToShortDateString()</strong>
+        <strong style="float:right">End Date :@Model.ProjectEndDate.ToShortDateString()</strong>
+    </p>
+
+<hr/>
+
+<h2>
+    <strong>Project Description: <br /><br /></strong></h2>@Model.ProjectDescription
+
+<hr/>
+
 
 @if (Model?.Assignments?.Count > 0)
 {
     <h2>Assignments:</h2>
-    <hr/>
+    
     <p>For details about a certain assignment, please click the bubble below, corresponding to your desired selection.</p>
      <ul class="progress-indicator"> 
             @foreach (var assignment in Model.Assignments)

@@ -58,7 +58,7 @@ namespace PBL.Controllers
             return View(viewModel);
         }
 
-        public async Task<IActionResult> GradeAssignment(int assignmentId, float grade)
+        public async Task<IActionResult> GradeAssignment(int assignmentId, float AssignmentGrade)
         {
             var assignment = await _context.Assignments.FindAsync(assignmentId);
             if (assignment == null)
@@ -66,7 +66,7 @@ namespace PBL.Controllers
                 return NotFound();
             }
 
-            assignment.Grade = grade;
+            assignment.Grade = AssignmentGrade;
             await _context.SaveChangesAsync();
 
             return RedirectToAction("Details", "Assignment", new { id = assignment.Id });
