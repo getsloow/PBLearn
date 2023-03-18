@@ -1,9 +1,21 @@
-﻿@model FileUploadViewModel
+﻿<center>
+    <h1>
+        Welcome to the PBLearn platform
+    </h1>
 
-<form method="post" enctype="multipart/form-data" asp-action="Upload" asp-controller="File">
-    <div class="form-group">
-        <label for="file">Choose file</label>
-        <input type="file" class="form-control-file" id="file" name="File" asp-for="File" />
-    </div>
-    <button type="submit" class="btn btn-primary">Upload</button>
-</form>
+    @if (User.Identity.IsAuthenticated )
+    {
+        @if (User.IsInRole("Teacher"))
+        {
+            <p> Please manage the projects from the "Project List" page, or assign students to existing projects using the "Allocate a Project" button</p>
+        }
+        else
+        {
+            <p>Please see the projects from the "Project List" page .</p>
+        }
+    }
+    else
+    {
+        <p> Please use the above menu to Log into your account, or Register a new one</p>
+    }
+</center>
