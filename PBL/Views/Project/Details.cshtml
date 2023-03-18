@@ -29,6 +29,11 @@
         {
             <li>
                 <a href="@Url.Action("Download", "File", new { id = file.FileId })">@file.FileName</a>
+                <button onclick="confirmDelete(@file.FileId)">Delete</button>
+                <form id="delete-form-@file.FileId" method="post" action="@Url.Action("Delete", "File", new { fileId = file.FileId })">
+            <input type="hidden" name="projectId" value="@Model.ProjectId" />
+            <input type="hidden" name="returnUrl" value="@Url.Action("Details", "Project", new { id = Model.ProjectId })" />
+        </form>
             </li>
         }
     </ul>
@@ -37,6 +42,13 @@ else
 {
     <p>No files found.</p>
 }
+<script>
+    function confirmDelete(id) {
+        if (confirm("Are you sure you want to delete this file?")) {
+            document.getElementById("delete-form-" + id).submit();
+        }
+    }
+</script>
 
 
     <p>

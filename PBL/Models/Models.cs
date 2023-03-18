@@ -11,10 +11,7 @@ namespace PBL.Models
         public float? Grade { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
-
         public string? UserEmail { get; set; }
-        //public string? File { get; set; } // Add this property
-
         public List<Assignment>? Assignments { get; set; }
         public List<Comment>? Comments { get; set; }
 
@@ -32,6 +29,7 @@ namespace PBL.Models
         public int ProjectId { get; set; }
         public Project Project { get; set; }
         public List<Comment>? Comments { get; set; }
+        public List<File>? Files { get; set; }
     }
 
     public class ProjectDetailsViewModel
@@ -45,7 +43,6 @@ namespace PBL.Models
         public string? UserEmail { get; set; }
         public List<AssignmentViewModel>? Assignments { get; set; }
         public List<CommentViewModel>? Comments { get; set; }
-
         public List<FileViewModel>? Files { get; set; }
     }
 
@@ -67,6 +64,7 @@ namespace PBL.Models
         public string ProjectDescription { get; set; }
         public int ProjectId {get; set; }
         public List<CommentViewModel>? Comments { get; set; }
+        public List<FileViewModel>? Files { get; set; }
     }
 
 
@@ -115,7 +113,9 @@ namespace PBL.Models
     public class FileUploadViewModel
     {
         public IFormFile File { get; set; }
-        public int ProjectId { get; set; }
+        public int? ProjectId { get; set; }
+        public int? AssignmentId { get; set; }
+
     }
     public class File
     {
@@ -123,7 +123,9 @@ namespace PBL.Models
         public string Name { get; set; }
         public string Location { get; set; }
         public int? ProjectId { get; set; }
+        public int? AssignmentId { get; set; }
         public virtual Project Project { get; set; }
+        public virtual Assignment Assignment { get; set; }
     }
 
 

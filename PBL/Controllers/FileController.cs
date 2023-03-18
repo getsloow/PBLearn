@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis;
 using PBL.Data;
 using PBL.Models;
 
@@ -7,12 +8,50 @@ namespace PBL.Controllers
     public class FileController : Controller
     {
         private readonly ApplicationDbContext _dbContext;
+        private readonly IWebHostEnvironment _webHostEnvironment;
 
-        public FileController(ApplicationDbContext dbContext)
+        public FileController(ApplicationDbContext dbContext, IWebHostEnvironment webHostEnvironment)
         {
             _dbContext = dbContext;
+            _webHostEnvironment=webHostEnvironment;
         }
 
+        [HttpPost]
+        public async Task<IActionResult> Delete(int fileId)
+        {
+            var file = await _dbContext.Files.FindAsync(fileId);
+            var type = "";
+
+            if (file.AssignmentId != null)
+            {
+                type = "a";
+            }
+            else
+            {
+                type = "p";
+            }
+
+            if (file == null)
+            {
+                return NotFound();
+            }
+
+            // Delete the file from the file system
+            var filePath = Path.Combine(_webHostEnvironment.WebRootPath, "uploads", file.Location);
+            if (System.IO.File.Exists(filePath))
+            {
+                System.IO.File.Delete(filePath);
+            }
+
+            // Delete the file from the database
+            _dbContext.Files.Remove(file);
+            await _dbContext.SaveChangesAsync();
+
+            if (type == "a") { return RedirectToAction("Details", "Assignment", new { id = file.AssignmentId }); }
+            else if (type == "p" ) { return RedirectToAction("Details", "Project", new { id = file.ProjectId }); }
+            else
+                return View();
+        }
         public IActionResult Download(int id)
         {
             var file = _dbContext.Files.FirstOrDefault(f => f.Id == id);
@@ -28,16 +67,15 @@ namespace PBL.Controllers
         }
 
         [HttpGet]
-        public IActionResult Upload(int projectId)
+        public IActionResult Upload(int? projectId, int? assignmentId)
         {
             var model = new FileUploadViewModel
             {
-                ProjectId = projectId
+                ProjectId = projectId,
+                AssignmentId = assignmentId
             };
             return View(model);
         }
-
-
 
         [HttpPost]
         public async Task<IActionResult> Upload(FileUploadViewModel model, int? projectId, int? assignmentId)
@@ -62,14 +100,16 @@ namespace PBL.Controllers
             {
                 Name = model.File.FileName,
                 Location = fileName,
-                ProjectId = projectId
-                
-
+                ProjectId = projectId,
+                AssignmentId = assignmentId
             };
             _dbContext.Files.Add(file);
             await _dbContext.SaveChangesAsync();
 
-            return RedirectToAction("Index", "Home");
+            if (assignmentId != null) { return RedirectToAction("Details", "Assignment", new { id = assignmentId }); }
+            else if (projectId != null) { return RedirectToAction("Details", "Project", new { id = projectId }); }
+            else
+                return View();
         }
     }
 

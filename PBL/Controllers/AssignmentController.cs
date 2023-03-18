@@ -25,6 +25,7 @@ namespace PBL.Controllers
             var assignment = _context.Assignments
                             .Include(a => a.Project)
                             .Include(c => c.Comments)
+                            .Include(f => f.Files)
                             .FirstOrDefault(a => a.Id == id);
 
             if (assignment == null)
@@ -44,6 +45,12 @@ namespace PBL.Controllers
                 ProjectName = assignment.Project.Name,
                 ProjectDescription = assignment.Project.Description,
                 ProjectId = assignment.Project.Id,
+                Files = assignment.Files != null ? assignment.Files.Select(f => new FileViewModel
+                {
+                    FileId = f.Id,
+                    FileLocation = f.Location,
+                    FileName = f.Name
+                }).ToList() : new List<FileViewModel>(),
                 Comments = assignment.Comments != null ? assignment.Comments.Select(c => new CommentViewModel
                 {
                     CommentId = c.Id,
