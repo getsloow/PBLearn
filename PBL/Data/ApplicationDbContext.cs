@@ -20,7 +20,7 @@ namespace PBL.Data
         public DbSet<Assignment> Assignments { get; set; }
 
         public DbSet<Comment> Comments { get; set; }
-        public DbSet<FileUpload> FileUploads { get; set; }
+        public DbSet<Models.File> Files { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

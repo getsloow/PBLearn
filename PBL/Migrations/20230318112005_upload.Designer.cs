@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using PBL.Data;
 
@@ -11,9 +12,11 @@ using PBL.Data;
 namespace PBL.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20230318112005_upload")]
+    partial class upload
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -301,9 +304,6 @@ namespace PBL.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("AssignmentId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Location")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -312,14 +312,7 @@ namespace PBL.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("ProjectId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("AssignmentId");
-
-                    b.HasIndex("ProjectId");
 
                     b.ToTable("Files");
                 });
@@ -427,21 +420,6 @@ namespace PBL.Migrations
 
                     b.HasOne("PBL.Models.Project", "Project")
                         .WithMany("Comments")
-                        .HasForeignKey("ProjectId");
-
-                    b.Navigation("Assignment");
-
-                    b.Navigation("Project");
-                });
-
-            modelBuilder.Entity("PBL.Models.File", b =>
-                {
-                    b.HasOne("PBL.Models.Assignment", "Assignment")
-                        .WithMany()
-                        .HasForeignKey("AssignmentId");
-
-                    b.HasOne("PBL.Models.Project", "Project")
-                        .WithMany()
                         .HasForeignKey("ProjectId");
 
                     b.Navigation("Assignment");

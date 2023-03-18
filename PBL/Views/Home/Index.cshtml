@@ -1,25 +1,9 @@
-﻿@model FileUpload
+﻿@model FileUploadViewModel
 
-<form asp-action="FileUpload" method="post" enctype="multipart/form-data">
+<form method="post" enctype="multipart/form-data" asp-action="Upload" asp-controller="File">
     <div class="form-group">
-        <label asp-for="FileName"></label>
-        <input asp-for="FileName" class="form-control" />
-    </div>
-    <div class="form-group">
-        <label asp-for="Data"></label>
-        <input asp-for="Data" type="file" class="form-control" />
+        <label for="file">Choose file</label>
+        <input type="file" class="form-control-file" id="file" name="File" asp-for="File" />
     </div>
     <button type="submit" class="btn btn-primary">Upload</button>
 </form>
-
-<a class="nav-link text-white" asp-area="" asp-action="Allocate">Allocate a project</a>
-
-
-@if (User.IsInRole("Teacher"))
-{
-    <div class="form-group">
-        <label for="userId">Select User:</label>
-        @Html.DropDownListFor(m => m.ContentType, (IEnumerable<SelectListItem>)ViewBag.UserList, "-- Select User --", new { @class = "form-control" })
-    </div>
-
-}

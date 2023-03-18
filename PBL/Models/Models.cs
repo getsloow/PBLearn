@@ -102,15 +102,21 @@ namespace PBL.Models
         public int ProjectId { get; set; }
     }
 
-    public class FileUpload
+    public class FileUploadViewModel
+    {
+        public IFormFile File { get; set; }
+    }
+    public class File
     {
         public int Id { get; set; }
-        public string FileName { get; set; }
-        public string ContentType { get; set; }
-        public long Size { get; set; }
-        public byte[] Data { get; set; }
-    }
+        public string Name { get; set; }
+        public string Location { get; set; }
+        public int? ProjectId { get; set; }
+        public int? AssignmentId { get; set; }
 
+        public virtual Project Project { get; set; }
+        public virtual Assignment Assignment { get; set; }
+    }
 
 
 }

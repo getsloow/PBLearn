@@ -131,7 +131,7 @@ else
         <hr />
         Use this text box to offer a grade after the submissions. For decimal precision please use the <strong>.</strong> (e.g. 7.4)
         <br/>
-        <form asp-action="Grade" asp-route-projectId="@Model.ProjectId" method="post">
+        <form asp-action="Grade" asp-route-projectId="@Model?.ProjectId" method="post">
             <div class="form-group col-1 ">
                 <label asp-for="ProjectGrade" class="control-label col-6 bg-black"> Grade: </label>
                 <input asp-for="ProjectGrade" class="form-control col-6 bg-black" style="color:white;background-color:black" value="" />
