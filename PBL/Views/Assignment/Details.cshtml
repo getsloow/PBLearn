@@ -48,7 +48,7 @@ else
 }
 
 <form asp-controller="Comment" asp-action="AddComment" method="post">
-    <input type="hidden" name="assignmentId" value="@Model.AssignmentId" />
+    <input type="hidden" name="assignmentId" value="@Model?.AssignmentId" />
     
 
     <div class="form-group col-4">
@@ -65,7 +65,7 @@ else
     <div style="padding-top:15px">
         <h4 class="mb-2">Grade Assignment</h4>
         <hr />
-        <form asp-action="GradeAssignment" asp-route-assignmentId="@Model.AssignmentId" method="post">
+        <form asp-action="GradeAssignment" asp-route-assignmentId="@Model?.AssignmentId" method="post">
             <div class="form-group col-1">
                 <label asp-for="AssignmentGrade" class="control-label col-6 bg-black"></label>
                 <input asp-for="AssignmentGrade" class="form-control col-6 bg-black" style="color:white;background-color:black" value=""/>
@@ -78,5 +78,5 @@ else
     </div>
 }
 <div class="mt-auto p-2 bd-highlight">
-    <a class="btn btn-secondary col-12" asp-controller="Project" asp-action="Details" asp-route-id="@Model.ProjectId">Back to project</a>
+    <a class="btn btn-secondary col-12" asp-controller="Project" asp-action="Details" asp-route-id="@Model?.ProjectId">Back to project</a>
 </div>
