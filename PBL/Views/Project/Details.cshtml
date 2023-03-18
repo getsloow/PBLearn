@@ -21,6 +21,23 @@
 </center>
 
 
+<h2>Files</h2>
+@if (Model.Files != null && Model.Files.Any())
+{
+    <ul>
+        @foreach (var file in Model.Files)
+        {
+            <li>
+                <a href="@Url.Action("Download", "File", new { id = file.FileId })">@file.FileName</a>
+            </li>
+        }
+    </ul>
+}
+else
+{
+    <p>No files found.</p>
+}
+
 
     <p>
         <strong>Start Date: @Model.ProjectStartDate.ToShortDateString()</strong>
@@ -28,6 +45,7 @@
     </p>
 
 <hr/>
+<a asp-action="Upload" asp-controller="File" asp-route-projectId="@Model.ProjectId">Upload File</a>
 
 <h2>
     @*@Model.AssignedTo*@

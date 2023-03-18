@@ -17,6 +17,8 @@ namespace PBL.Models
 
         public List<Assignment>? Assignments { get; set; }
         public List<Comment>? Comments { get; set; }
+
+        public List<File>? Files { get; set; }
     }
 
     public class Assignment
@@ -43,8 +45,16 @@ namespace PBL.Models
         public string? UserEmail { get; set; }
         public List<AssignmentViewModel>? Assignments { get; set; }
         public List<CommentViewModel>? Comments { get; set; }
+
+        public List<FileViewModel>? Files { get; set; }
     }
 
+    public class FileViewModel
+    {
+        public int FileId { get; set; }
+        public string FileName { get; set; }
+        public string FileLocation { get; set; }
+    }
     public class AssignmentViewModel
     {
         public int AssignmentId { get; set; }
@@ -105,6 +115,7 @@ namespace PBL.Models
     public class FileUploadViewModel
     {
         public IFormFile File { get; set; }
+        public int ProjectId { get; set; }
     }
     public class File
     {
@@ -112,10 +123,7 @@ namespace PBL.Models
         public string Name { get; set; }
         public string Location { get; set; }
         public int? ProjectId { get; set; }
-        public int? AssignmentId { get; set; }
-
         public virtual Project Project { get; set; }
-        public virtual Assignment Assignment { get; set; }
     }
 
 

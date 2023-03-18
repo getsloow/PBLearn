@@ -13,6 +13,32 @@ namespace PBL.Controllers
             _dbContext = dbContext;
         }
 
+        public IActionResult Download(int id)
+        {
+            var file = _dbContext.Files.FirstOrDefault(f => f.Id == id);
+            if (file == null)
+            {
+                return NotFound();
+            }
+
+            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "Uploads", file.Location);
+            var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
+
+            return File(fileStream, "application/octet-stream", file.Name);
+        }
+
+        [HttpGet]
+        public IActionResult Upload(int projectId)
+        {
+            var model = new FileUploadViewModel
+            {
+                ProjectId = projectId
+            };
+            return View(model);
+        }
+
+
+
         [HttpPost]
         public async Task<IActionResult> Upload(FileUploadViewModel model, int? projectId, int? assignmentId)
         {
@@ -36,8 +62,8 @@ namespace PBL.Controllers
             {
                 Name = model.File.FileName,
                 Location = fileName,
-                ProjectId = projectId,
-                AssignmentId= assignmentId,
+                ProjectId = projectId
+                
 
             };
             _dbContext.Files.Add(file);

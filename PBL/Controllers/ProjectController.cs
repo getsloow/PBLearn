@@ -167,6 +167,7 @@ namespace PBL.Controllers
             var proiect = await _context.Projects
                                 .Include(p =>p.Assignments)
                                 .Include(a => a.Comments)
+                                .Include(p => p.Files)
                                 .FirstOrDefaultAsync(n => n.Id == id);
 
             if (proiect == null)
@@ -190,6 +191,13 @@ namespace PBL.Controllers
                     AssignmentDueDate = a.DueDate,
                     AssignmentIsCompleted = a.IsCompleted
                 }).OrderBy(a => a.AssignmentDueDate).ToList()
+                ,
+                Files = proiect.Files?.Select( p => new FileViewModel
+                { 
+                  FileId = p.Id,
+                  FileName = p.Name,
+                  FileLocation = p.Location
+                }).ToList()
                 ,
                 Comments = proiect.Comments != null ? proiect.Comments.Select(c => new CommentViewModel
                 {
