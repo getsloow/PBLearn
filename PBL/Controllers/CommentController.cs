@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using PBL.Data;
 using PBL.Models;
 
@@ -13,6 +14,7 @@ namespace PBL.Controllers
         {
             _context = context;
         }
+        [Authorize]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> AddComment(int? projectId, string text, int? assignmentId)
@@ -29,7 +31,7 @@ namespace PBL.Controllers
                 PostedOn = DateTime.UtcNow,
                 ProjectId = projectId,
                 AssignmentId = assignmentId,
-                PostedBy = "Armand2" // or use a custom user identity if you have implemented one
+                PostedBy = User?.Identity?.Name // or use a custom user identity if you have implemented one
             };
 
             _context.Comments.Add(comment);

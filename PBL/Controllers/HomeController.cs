@@ -23,18 +23,29 @@ namespace PBL.Controllers
             _roleManager = role;
         }
 
-        public async Task<IActionResult> IndexAsync()
+        public async Task<IActionResult> Index()
         {
-            var role = new IdentityRole { Name = "Teacher" };
-            var result = await _roleManager.CreateAsync(role);
+            var roleCreate = new IdentityRole { Name = "Teacher" };
+            var result = await _roleManager.CreateAsync(roleCreate);
 
-            var usr = await _userManager.FindByEmailAsync("profesor@test.com");
-            var rol = await _userManager.FindByNameAsync("Teacher");
-
-
-            if (usr != null && role != null)
+            var role = await _roleManager.FindByNameAsync("Teacher");
+            if (role == null)
             {
-                var resultat = await _userManager.AddToRoleAsync(usr, role.Name);
+                // Role does not exist, handle the error
+            }
+
+            var user = await _userManager.FindByEmailAsync("profesor@test.com");
+            if (user == null)
+            {
+                // User does not exist, handle the error
+            }
+
+            var isInRole = await _userManager.IsInRoleAsync(user, "Teacher");
+
+
+            if (user != null && role != null)
+            {
+                var resultat = await _userManager.AddToRoleAsync(user, role.Name);
 
                 if (resultat.Succeeded)
                 {
@@ -45,13 +56,13 @@ namespace PBL.Controllers
                     // Failed to add role to user, check the errors in result.Errors
                 }
             }
-
-            var users = await _userManager.Users.ToListAsync();
+            var lista = await _userManager.GetUsersInRoleAsync("Teacher");
+            var users = await _userManager.Users.Where(u => !lista.Contains(u)).ToListAsync();
             var userList = new List<SelectListItem>();
 
-            foreach (var user in users)
+            foreach (var userListElements in users)
             {
-                userList.Add(new SelectListItem() { Value = user.Id, Text = user.UserName });
+                userList.Add(new SelectListItem() { Value = userListElements.Id, Text = userListElements.UserName });
             }
 
             ViewBag.UserList = userList;
@@ -62,6 +73,75 @@ namespace PBL.Controllers
         public IActionResult Privacy()
         {
             return View();
+        }
+
+        public async Task<IActionResult> Allocate()
+        {
+            var lista = await _userManager.GetUsersInRoleAsync("Teacher");
+            var users = await _userManager.Users.Where(u => !lista.Contains(u)).ToListAsync();
+            var projects = await _context.Projects.Where(p => string.IsNullOrEmpty(p.UserEmail)).ToListAsync();
+            var allocatedProjects = await _context.Projects.Where(p => !string.IsNullOrEmpty(p.UserEmail)).ToListAsync();
+            var projectList = new List<SelectListItem>();
+            var userList = new List<SelectListItem>();
+            var allocatedProjectsList = new List<SelectListItem>();
+
+            foreach (var allocs in allocatedProjects)
+            {
+                allocatedProjectsList.Add(new SelectListItem() { Value = allocs.Id.ToString(), Text = allocs.Name });
+            }
+            
+
+            foreach (var user in users)
+            {
+                userList.Add(new SelectListItem() { Value = user.Id, Text = user.UserName });
+            }
+
+            foreach (var project in projects)
+            {
+                projectList.Add(new SelectListItem() { Value = project.Id.ToString(), Text = project.Name });
+            }
+            ViewBag.UserList = userList;
+            ViewBag.ProjectList = projectList;
+            ViewBag.AllocatedProjectsList = allocatedProjectsList;
+
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Allocate(int Id, string UserEmail)
+        {
+            var project = await _context.Projects.FindAsync(Id);
+            if (project == null)
+            {
+                return NotFound();
+            }
+
+            var user = await _userManager.FindByIdAsync(UserEmail);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            project.UserEmail = user.Email;
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("Allocate", "Home");
+        }
+        [HttpPost]
+        public async Task<IActionResult> DeAllocate(int Id)
+        {
+            var project = await _context.Projects.FindAsync(Id);
+            if (project == null)
+            {
+                return NotFound();
+            }
+
+
+
+            project.UserEmail = null;
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("Allocate", "Home");
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

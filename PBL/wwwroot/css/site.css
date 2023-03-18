@@ -2,7 +2,9 @@ html {
     font-size: 14px;
     color: white;
 }
-
+.form{
+    background-color:black;
+}
 h1 {
     color: white;
 }

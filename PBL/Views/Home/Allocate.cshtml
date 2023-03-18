@@ -1,0 +1,31 @@
+﻿@model Project
+
+<center>
+    <h1>Project Assignation/De-assignation page</h1>
+</center>
+<h2>Assignation:</h2>
+<hr />
+<p>Select a project from the dropdown list, then select the student E-mail Address that you would like to be assigned to it.</p>
+<form asp-controller="Home" asp-action="Allocate" method="post">
+    <div class="form-group bg-black">
+        <label for="projectId" class="bg-black">Select Project:</label>
+        @Html.DropDownListFor(m => m.Id, (IEnumerable<SelectListItem>)ViewBag.ProjectList, "-- Select Project --", new { @class = "form-control" })
+    </div>
+    <div class="form-group">
+        <label for="userId">Select Student:</label>
+        @Html.DropDownListFor(m => m.UserEmail, (IEnumerable<SelectListItem>)ViewBag.UserList, "-- Select Student --", new { @class = "form-control" })
+    </div>
+    
+    <button type="submit" class="btn btn-primary">Assign</button>
+</form>
+
+<h2 style="margin-top:10%">De-assignation:</h2>
+<hr />
+<p>Select a project from the dropdown list, in order to clear the current student which is assigned to it.</p>
+<form asp-controller="Home" asp-action="DeAllocate" method="post">
+    <div class="form-group">
+        <label for="projectId">Select Project:</label>
+        @Html.DropDownListFor(m => m.Id, (IEnumerable<SelectListItem>)ViewBag.AllocatedProjectsList, "-- Select Project --", new { @class = "form-control" })
+    </div>
+    <button type="submit" class="btn btn-primary">De-allocate</button>
+</form>

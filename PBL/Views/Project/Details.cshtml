@@ -1,8 +1,13 @@
 ﻿@model ProjectDetailsViewModel
 
-
 <center><h1>@Model.ProjectName</h1>
-
+    @if (User.IsInRole("Teacher"))
+    {
+        <h3>
+            Assigned to:
+            @Model.UserEmail
+        </h3>
+    }
     @if (Model.ProjectGrade != 0)
     {
         <p><strong>Grade:</strong>@Model.ProjectGrade</p>
@@ -39,6 +44,7 @@
      <ul class="progress-indicator"> 
             @foreach (var assignment in Model.Assignments)
             {
+                
                 @if (assignment.AssignmentIsCompleted == true )
                     {
                    <li class="completed">

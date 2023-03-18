@@ -11,6 +11,8 @@ namespace PBL.Models
         public float? Grade { get; set; }
         public DateTime StartDate { get; set; }
         public DateTime EndDate { get; set; }
+
+        public string? UserEmail { get; set; }
         //public string? File { get; set; } // Add this property
 
         public List<Assignment>? Assignments { get; set; }
@@ -38,6 +40,7 @@ namespace PBL.Models
         public float? ProjectGrade { get; set; }
         public DateTime ProjectStartDate { get; set; }
         public DateTime ProjectEndDate { get; set; }
+        public string? UserEmail { get; set; }
         public List<AssignmentViewModel>? Assignments { get; set; }
         public List<CommentViewModel>? Comments { get; set; }
     }

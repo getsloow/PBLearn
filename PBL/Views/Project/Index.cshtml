@@ -1,10 +1,15 @@
 ﻿@model IEnumerable<Project>
 
-<center><h1>Your currently assigned projects</h1>
+<center>
     @if (User.IsInRole("Teacher")){
-<a asp-action="Create" class="btn btn-dark col-6">Create New Project</a>
-    }
-    <p>To see details for a specific project, click the card with its name</p>
+        <h1>Projects List</h1>
+    <a asp-action="Create" class="btn btn-dark col-6">Create New Project</a>
+}else
+{
+   
+        <h1>Your currently assigned projects</h1>
+}
+<p>To see details for a specific project, click the card with its name</p>
 </center>
  <hr/>
 <div class="ag-format-container">
@@ -28,6 +33,29 @@
                             @project.EndDate
                         </span>
                     </div>
+                @if (User.IsInRole("Teacher"))
+                {
+                    @if (project.UserEmail != null)
+                    {
+                        <div class="ag-courses-item_date-box">
+                            &nbsp; Assigned to:
+                            <span class="ag-courses-item_date">
+                                @project.UserEmail
+                            </span>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="ag-courses-item_date-box">
+                            
+                            <span class="ag-courses-item_date " style="margin-left:10px">
+                                            Not assigned
+                            </span>
+                        </div>
+                    }
+                }
+                
+                    
                 @if (User.IsInRole("Teacher"))
                 {
                     <a class="ag-courses-item_date" asp-controller="Assignment" asp-action="Create" asp-route-projectId="@project.Id">&nbsp;&nbsp;Create Assignment |</a>

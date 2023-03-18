@@ -1,0 +1,12 @@
+﻿@model Project
+<form asp-controller="AllocateController" asp-action="Allocate" method="post">
+    <div class="form-group bg-dark">
+        <label for="userId">Select User:</label>
+        @Html.DropDownListFor(m => m.UserEmail, (IEnumerable<SelectListItem>)ViewBag.UserList, "-- Select User --", new { @class = "form-control", name = "userEmail" })
+    </div>
+    <div class="form-group">
+        <label for="projectId" class="bg-black">Select Project:</label>
+        @Html.DropDownListFor(m => m.Id, (IEnumerable<SelectListItem>)ViewBag.ProjectList, "-- Select Project --", new { @class = "form-control", name = "projectId" })
+    </div>
+    <button type="submit" class="btn btn-primary">Allocate</button>
+</form>

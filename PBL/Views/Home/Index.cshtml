@@ -1,6 +1,6 @@
 ﻿@model FileUpload
 
-<form asp-action="Index" method="post" enctype="multipart/form-data">
+<form asp-action="FileUpload" method="post" enctype="multipart/form-data">
     <div class="form-group">
         <label asp-for="FileName"></label>
         <input asp-for="FileName" class="form-control" />
@@ -11,6 +11,8 @@
     </div>
     <button type="submit" class="btn btn-primary">Upload</button>
 </form>
+
+<a class="nav-link text-white" asp-area="" asp-action="Allocate">Allocate a project</a>
 
 
 @if (User.IsInRole("Teacher"))
