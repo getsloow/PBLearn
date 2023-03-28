@@ -3,7 +3,7 @@
 <center>
     @if (User.IsInRole("Teacher")){
         <h1>Projects List</h1>
-    <a asp-action="Create" class="btn btn-dark col-6">Create New Project</a>
+    <a asp-action="Create" class="btn btn-outline-success col-6">Create New Project</a>
 }else
 {
    
@@ -37,9 +37,9 @@
                 {
                     @if (project.UserEmail != null)
                     {
-                        <div class="ag-courses-item_date-box">
+                        <div class="ag-courses-item_date-box text-black">
                             &nbsp; Assigned to:
-                            <span class="ag-courses-item_date">
+                            <span class="ag-courses-item_date " style="margin-left:10px">
                                 @project.UserEmail
                             </span>
                         </div>

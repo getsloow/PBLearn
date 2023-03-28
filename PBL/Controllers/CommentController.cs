@@ -39,9 +39,8 @@ namespace PBL.Controllers
 
             TempData["SuccessMessage"] = "Comment added successfully.";
             if (assignmentId != null) { return RedirectToAction("Details", "Assignment", new { id = assignmentId }); }
-            else if (projectId != null) { return RedirectToAction("Details", "Project", new { id = projectId }); }
-            else
-                return View();
+            if (projectId != null) { return RedirectToAction("Details", "Project", new { id = projectId }); }
+            return View();
            
         }
 

@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.CodeAnalysis;
+using Microsoft.EntityFrameworkCore;
 using PBL.Data;
 using PBL.Models;
+using System.IO.Compression;
 
 namespace PBL.Controllers
 {
@@ -66,19 +68,52 @@ namespace PBL.Controllers
             return File(fileStream, "application/octet-stream", file.Name);
         }
 
+        public IActionResult DownloadAll(int? projectId, int? assignmentId)
+        {
+            // Get all files that match the projectId or assignmentId
+            var files = _dbContext.Files
+                .Where(f => f.ProjectId == projectId || f.AssignmentId == assignmentId)
+                .ToList();
+            var project = _dbContext.Projects.FirstOrDefault(f => f.Id == projectId);
+            var archiveName = $"{project?.Name} - {DateTime.Now:dd}.{DateTime.Now:MM}.{DateTime.Now:yyyy}.{DateTime.Now:t}.zip";
+            var archivePath = Path.Combine(Directory.GetCurrentDirectory(), archiveName);
+            using (var archive = ZipFile.Open(archivePath, ZipArchiveMode.Create))
+            {
+                // Add each file to the archive
+                foreach (var file in files)
+                {
+                    var filePath = Path.Combine(Directory.GetCurrentDirectory(), "Uploads", file.Location);
+                    if (System.IO.File.Exists(filePath))
+                    {
+                        var archiveEntry = archive.CreateEntry(file.Name);
+                        using (var stream = archiveEntry.Open())
+                        using (var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read))
+                        {
+                            fileStream.CopyTo(stream);
+                        }
+                    }
+                }
+            }
+
+            // Download the archive file
+            var archiveStream = new FileStream(archivePath, FileMode.Open, FileAccess.Read);
+            return File(archiveStream, "application/zip", archiveName);
+        }
+
         [HttpGet]
-        public IActionResult Upload(int? projectId, int? assignmentId)
+        public IActionResult Upload(int? projectId, int? assignmentId, string? uploadedBy)
         {
             var model = new FileUploadViewModel
             {
                 ProjectId = projectId,
-                AssignmentId = assignmentId
+                AssignmentId = assignmentId,
+                UploadedBy = uploadedBy
             };
             return View(model);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Upload(FileUploadViewModel model, int? projectId, int? assignmentId)
+        public async Task<IActionResult> Upload(FileUploadViewModel model, int? projectId, int? assignmentId, string uploadedBy)
         {
             if (model.File == null || model.File.Length == 0)
             {
@@ -101,7 +136,8 @@ namespace PBL.Controllers
                 Name = model.File.FileName,
                 Location = fileName,
                 ProjectId = projectId,
-                AssignmentId = assignmentId
+                AssignmentId = assignmentId,
+                UploadedBy = uploadedBy
             };
             _dbContext.Files.Add(file);
             await _dbContext.SaveChangesAsync();

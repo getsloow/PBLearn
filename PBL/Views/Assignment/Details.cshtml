@@ -1,6 +1,25 @@
 ﻿@model AssignmentViewModel
 
-<center><h1>@Model.AssignmentName</h1></center>
+<center>
+    <h1>@Model.AssignmentName</h1>
+    <p>
+        <strong>
+            Project:
+        </strong> 
+            @Model.ProjectName
+    </p>
+    @if (Model.AssignmentGrade != 0)
+    {
+        <p><strong>Grade:</strong>@Model.AssignmentGrade</p>
+    }
+    else
+    {
+        <p><strong>Grade: </strong> Not graded yet.</p>
+    }
+
+</center>
+
+<p><strong>End Date: @Model.AssignmentDueDate.ToShortDateString()</strong></p>
 
 
 <h2>Files</h2>
@@ -33,40 +52,34 @@ else
 </script>
 
 <a asp-action="Upload" asp-controller="File" asp-route-assignmentId="@Model.AssignmentId">Upload File</a>
+<hr/>
+<h2>
+    <strong>Project Description: <br /><br /></strong>
+</h2>
 
 
-<p><strong>Due Date:</strong> @Model.AssignmentDueDate.ToShortDateString()</p>
-<p><strong>Is Completed:</strong> @(Model.AssignmentIsCompleted ? "Yes" : "No")</p>
-<p><strong>Project:</strong> @Model.ProjectName</p>
-<p><strong>Details:</strong>@Model.AssignmentDescription</p>
-@if (Model.AssignmentGrade != 0)
-{
-    <p><strong>Grade:</strong>@Model.AssignmentGrade</p>
-}
-else
-{
-        <p><strong>Grade: </strong> Not graded yet.</p>
-}
-
+<p>@Model.AssignmentDescription</p>
+<br/>
+<h2>Comments:</h2>
 @if (Model?.Comments != null && Model.Comments.Count > 0)
 
 {
     
-    <h2>Comments:</h2>
+    
     <hr />
     @foreach (var comment in Model.Comments)
     {
 
         <div class="table">
             <div class="d-table-cell col-12">
-                <strong style="color:white">@comment.CreatedBy</strong> <p style="margin-left:2px;color:darkgrey" class="d-inline"><font size="1"> @comment.CreatedAt</font></p>
-                <p style="margin-top:2px;color:white">@comment.CommentText</p>
+                <strong style="color:black">@comment.CreatedBy</strong> <p style="margin-left:2px;color:darkgrey" class="d-inline"><font size="1"> @comment.CreatedAt</font></p>
+                <p style="margin-top:2px;color:black">@comment.CommentText</p>
             </div>
             <div class="d-table-cell">
                 <form asp-controller="Comment" asp-action="DeleteComment" method="post" style="display:inline-table" class="delete-btn">
                     <input type="hidden" name="commentId" value="@comment.CommentId" />
                     <input type="hidden" name="view" value="AssignmentDetails" />
-                    <button type="submit" class="btn btn-danger">Delete</button>
+                    <button type="submit" class="btn btn-danger text-black">Delete</button>
                 </form>
             </div>
         </div>
@@ -86,10 +99,10 @@ else
 
     <div class="form-group col-4">
         <label for="text">Add a comment:</label>
-        <textarea class="form-control bg-black col-4" style="color:white" id="text" name="text"></textarea>
+        <textarea class="form-control bg-white col-4" style="color:black" id="text" name="text"></textarea>
     </div>
 
-    <button type="submit" class="btn btn-dark">Add Comment</button>
+    <button type="submit" class="btn btn-outline-primary">Add Comment</button>
 </form>
 
 @if (User.IsInRole("Teacher"))

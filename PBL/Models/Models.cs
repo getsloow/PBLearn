@@ -115,6 +115,7 @@ namespace PBL.Models
         public IFormFile File { get; set; }
         public int? ProjectId { get; set; }
         public int? AssignmentId { get; set; }
+        public string UploadedBy { get; set; }
 
     }
     public class File
@@ -126,6 +127,7 @@ namespace PBL.Models
         public int? AssignmentId { get; set; }
         public virtual Project Project { get; set; }
         public virtual Assignment Assignment { get; set; }
+        public string UploadedBy { get; set; }
     }
 
 
