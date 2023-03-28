@@ -11,10 +11,10 @@
 }
 
 .link-primary {
-  color: #0d6efd;
+  color: #a75db4;
 }
 .link-primary:hover, .link-primary:focus {
-  color: #0a58ca;
+  color: #a75db4;
 }
 
 .link-secondary {
@@ -464,7 +464,7 @@
 }
 
 .border-primary {
-  border-color: #0d6efd !important;
+  border-color: #a75db4 !important;
 }
 
 .border-secondary {

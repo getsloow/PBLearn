@@ -51,6 +51,7 @@ namespace PBL.Models
         public int FileId { get; set; }
         public string FileName { get; set; }
         public string FileLocation { get; set; }
+        public string UploadedBy { get; set; }
     }
     public class AssignmentViewModel
     {

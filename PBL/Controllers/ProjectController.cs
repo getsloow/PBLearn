@@ -196,7 +196,8 @@ namespace PBL.Controllers
                 { 
                   FileId = p.Id,
                   FileName = p.Name,
-                  FileLocation = p.Location
+                  FileLocation = p.Location,
+                  UploadedBy = p.UploadedBy
                 }).ToList()
                 ,
                 Comments = proiect.Comments != null ? proiect.Comments.Select(c => new CommentViewModel

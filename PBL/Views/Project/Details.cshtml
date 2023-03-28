@@ -38,15 +38,21 @@
  
         <ul class="numbers" role="list"> 
             @foreach (var file in Model.Files)
-            {
+                @if (file.UploadedBy == "profesor@test.com")
+                {
                 <li class="number" role="listitem">
                             <div class="link-wrapper">
                     <a href="@Url.Action("Download", "File", new { id = file.FileId })">@file.FileName</a>
-                    <button class="m-1" onclick="confirmDelete(@file.FileId)">Delete</button>
-                    <form id="delete-form-@file.FileId" method="post" action="@Url.Action("Delete", "File", new { fileId = file.FileId })">
-                <input type="hidden" name="projectId" value="@Model.ProjectId" />
-                <input type="hidden" name="returnUrl" value="@Url.Action("Details", "Project", new { id = Model.ProjectId })" />
-            </form>
+                   
+                    @if (file.UploadedBy == User?.Identity?.Name)
+                    {
+                     <button class="m-1" onclick="confirmDelete(@file.FileId)">Delete</button>
+                     <form id="delete-form-@file.FileId" method="post" action="@Url.Action("Delete", "File", new { fileId = file.FileId })">
+                    <input type="hidden" name="projectId" value="@Model.ProjectId" />
+                    <input type="hidden" name="returnUrl" value="@Url.Action("Details", "Project", new { id = Model.ProjectId })" />
+                    </form>
+                }
+                
             </div>
                 </li>
             }
@@ -147,6 +153,73 @@ else
 <br/>
 <br/>
 
+<div style="overflow:auto">
+    <div style="float:left;width:50%">
+
+        <h2>Your submission:</h2>
+        @if (Model.Files != null && Model.Files.Any())
+        {
+
+            <ul class="numbers" role="list">
+                @foreach (var file in Model.Files)
+                    @if (file.UploadedBy != "profesor@test.com")
+                    {
+                        <li class="number" role="listitem">
+                            <div class="link-wrapper">
+                                <a href="@Url.Action("Download", "File", new { id = file.FileId })">@file.FileName</a>
+
+                                @if (file.UploadedBy == User?.Identity?.Name)
+                                {
+                                    <button class="m-1 btn btn-outline-danger text-black" onclick="confirmDelete(@file.FileId)">Delete</button>
+                                    <form id="delete-form-@file.FileId" method="post" action="@Url.Action("Delete", "File", new { fileId = file.FileId })">
+                                        <input type="hidden" name="projectId" value="@Model.ProjectId" />
+                                        <input type="hidden" name="returnUrl" value="@Url.Action("Details", "Project", new { id = Model.ProjectId })" />
+                                    </form>
+                                }
+
+                            </div>
+                        </li>
+                    }
+            </ul>
+
+            <a class="btn btn-primary" href="@Url.Action("DownloadAll", "File", new { projectId = Model.ProjectId })">Download All</a>
+        }
+        else
+        {
+            <p>No files found.</p>
+        }
+        <script>
+            function confirmDelete(id) {
+                if (confirm("Are you sure you want to delete this file?")) {
+                    document.getElementById("delete-form-" + id).submit();
+                }
+            }
+        </script>
+
+
+    </div>
+    <div style="float:right;width:50%">
+
+@if (User?.IsInRole("Teacher") != true)
+{
+<form method="post" enctype="multipart/form-data" asp-action="Upload" asp-controller="File" asp-route-projectId="@Model.ProjectId" asp-route-uploadedBy="@User?.Identity?.Name">
+    <div class="form-group drop-zone">
+        
+            <input type="file" id="file" name="file" onchange="updateText()" class="custom-file-input" style="display:none" />
+            <label class="custom-file-label" for="file" style="display:none">Choose file</label>
+            <div id="drop-area">
+                <p id="textChange">Drag and drop a file here or click to choose a file.</p>
+            </div>
+        <div class="text-right">
+                        <button type="submit" class="btn btn-primary mt-3 col-12" id="uploadButton" disabled>Upload</button>
+        </div>
+      
+    </div>
+</form>
+}
+</div>
+</div>
+
 @if(Model?.Comments != null && Model.Comments.Count > 0)
    
 {
@@ -161,7 +234,7 @@ else
                 <p style="margin-top:2px;color:black">@comment.CommentText</p>
             </div>
         <div class="d-table-cell">
-                @if (comment.CreatedBy == User.Identity.Name)
+                @if (comment.CreatedBy == User?.Identity?.Name)
                 {
                     <form asp-controller="Comment" asp-action="DeleteComment" method="post" style="display:inline-table" class="delete-btn">
                         <input type="hidden" name="commentId" value="@comment.CommentId" />
@@ -191,7 +264,7 @@ else
     <button type="submit" class="btn btn-outline-primary">Add Comment</button>
 </form>
 
-@if (User.IsInRole("Teacher"))
+@if (User?.IsInRole("Teacher") == true)
 {
     <div style="padding-top:15px">
         <h4 class="mb-2">Grade Project</h4>
