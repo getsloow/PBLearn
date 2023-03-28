@@ -39,8 +39,10 @@ namespace PBL.Controllers
             {
                 // User does not exist, handle the error
             }
-
-            var isInRole = await _userManager.IsInRoleAsync(user, "Teacher");
+            else
+            {
+                var isInRole = await _userManager.IsInRoleAsync(user, "Teacher");
+            }
 
 
             if (user != null && role != null)

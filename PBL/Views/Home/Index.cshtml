@@ -3,7 +3,7 @@
         Welcome to the PBLearn platform
     </h1>
 
-    @if (User.Identity.IsAuthenticated )
+    @if (User.Identity?.IsAuthenticated == true)
     {
         @if (User.IsInRole("Teacher"))
         {

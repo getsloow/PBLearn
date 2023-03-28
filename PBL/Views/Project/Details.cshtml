@@ -1,5 +1,10 @@
 ﻿@model ProjectDetailsViewModel
 
+<style>
+ 
+
+</style>
+
 <center><h1>@Model.ProjectName</h1>
     @if (User.IsInRole("Teacher"))
     {
@@ -26,25 +31,29 @@
     </p>
 <div style="overflow:auto">
     <div style="float:left;width:50%">
+
 <h2>Files</h2>
 @if (Model.Files != null && Model.Files.Any())
-{
-    <ul>
-        @foreach (var file in Model.Files)
-        {
-            <li>
-                <a href="@Url.Action("Download", "File", new { id = file.FileId })">@file.FileName</a>
-                <button onclick="confirmDelete(@file.FileId)">Delete</button>
-                <form id="delete-form-@file.FileId" method="post" action="@Url.Action("Delete", "File", new { fileId = file.FileId })">
-            <input type="hidden" name="projectId" value="@Model.ProjectId" />
-            <input type="hidden" name="returnUrl" value="@Url.Action("Details", "Project", new { id = Model.ProjectId })" />
-        </form>
-            </li>
-        }
-    </ul>
-    <a href="@Url.Action("DownloadAll", "File", new { projectId = Model.ProjectId })">Download All</a>
+    {
+ 
+        <ul class="numbers" role="list"> 
+            @foreach (var file in Model.Files)
+            {
+                <li class="number" role="listitem">
+                            <div class="link-wrapper">
+                    <a href="@Url.Action("Download", "File", new { id = file.FileId })">@file.FileName</a>
+                    <button class="m-1" onclick="confirmDelete(@file.FileId)">Delete</button>
+                    <form id="delete-form-@file.FileId" method="post" action="@Url.Action("Delete", "File", new { fileId = file.FileId })">
+                <input type="hidden" name="projectId" value="@Model.ProjectId" />
+                <input type="hidden" name="returnUrl" value="@Url.Action("Details", "Project", new { id = Model.ProjectId })" />
+            </form>
+            </div>
+                </li>
+            }
+        </ul>
 
-}
+    <a class="btn btn-primary" href="@Url.Action("DownloadAll", "File", new { projectId = Model.ProjectId })">Download All</a>
+    }
 else
 {
     <p>No files found.</p>
@@ -190,13 +199,13 @@ else
         Use this text box to offer a grade after the submissions. For decimal precision please use the <strong>.</strong> (e.g. 7.4)
         <br/>
         <form asp-action="Grade" asp-route-projectId="@Model?.ProjectId" method="post">
-            <div class="form-group col-1 ">
+            <div class="form-group col-2 ">
                 <label asp-for="ProjectGrade" class="control-label col-6"> Grade: </label>
-                <input asp-for="ProjectGrade" class="form-control col-6 " style="color:black;" value="" />
+                <input asp-for="ProjectGrade" class="form-control col-2" style="color:black;" value="" />
                 <span asp-validation-for="ProjectGrade" class="text-danger col-6"></span>
             </div>
             <div class="form-group">
-                <input type="submit" value="Grade" class="btn btn-outline-success col-1" />
+                <input type="submit" value="Grade" class="btn btn-outline-success col-2" />
             </div>
         </form>
     </div>

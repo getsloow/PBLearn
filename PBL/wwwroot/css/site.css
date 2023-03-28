@@ -9,14 +9,14 @@ html {
     color: white;
 }*/
 @media (min-width: 768px) {
-  html {
-    font-size: 16px;
-  }
+    html {
+        font-size: 16px;
+    }
 }
 
 html {
-  position: relative;
-  min-height: 100%;
+    position: relative;
+    min-height: 100%;
 }
 
 body {
@@ -24,8 +24,8 @@ body {
     /*color: white;*/
 }
 
-a{
-    text-decoration:none;
+a {
+    text-decoration: none;
 }
 
 .flexer, .progress-indicator {
@@ -217,6 +217,7 @@ a{
         font-size: 60%
     }
 }
+
 .ag-format-container {
     width: 1142px;
     margin: 0 auto;
@@ -366,6 +367,7 @@ a{
         font-size: 16px;
     }
 }
+
 .comment {
     position: relative;
 }
@@ -380,6 +382,7 @@ a{
     .comment:hover .delete-btn {
         display: block;
     }
+
 .drop-zone {
     border: 2px dashed #ccc;
     padding: 20px;

@@ -24,18 +24,21 @@ namespace PBL.Controllers
             var file = await _dbContext.Files.FindAsync(fileId);
             var type = "";
 
-            if (file.AssignmentId != null)
-            {
-                type = "a";
-            }
-            else
-            {
-                type = "p";
-            }
-
+            
             if (file == null)
             {
                 return NotFound();
+            }
+            else
+            {
+                if (file.AssignmentId != null)
+                {
+                    type = "a";
+                }
+                else
+                {
+                    type = "p";
+                }
             }
 
             // Delete the file from the file system

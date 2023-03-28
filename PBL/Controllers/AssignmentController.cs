@@ -83,7 +83,7 @@ namespace PBL.Controllers
         {
             var model = new AssignmentCreateViewModel
             {
-                
+
                 ProjectId = projectId
             };
 
@@ -94,7 +94,7 @@ namespace PBL.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(AssignmentCreateViewModel model)
         {
-            
+
 
             if (ModelState.IsValid)
             {
