@@ -24,7 +24,7 @@ namespace PBL.Controllers
             var file = await _dbContext.Files.FindAsync(fileId);
             var type = "";
 
-            
+
             if (file == null)
             {
                 return NotFound();
@@ -53,7 +53,7 @@ namespace PBL.Controllers
             await _dbContext.SaveChangesAsync();
 
             if (type == "a") { return RedirectToAction("Details", "Assignment", new { id = file.AssignmentId }); }
-            else if (type == "p" ) { return RedirectToAction("Details", "Project", new { id = file.ProjectId }); }
+            else if (type == "p") { return RedirectToAction("Details", "Project", new { id = file.ProjectId }); }
             else
                 return View();
         }
@@ -75,8 +75,8 @@ namespace PBL.Controllers
         {
             // Get all files that match the projectId or assignmentId
             var files = _dbContext.Files
-                .Where(f => f.ProjectId == projectId || f.AssignmentId == assignmentId)
-                .ToList();
+     .Where(f => (projectId.HasValue && f.ProjectId == projectId.Value) || (assignmentId.HasValue && f.AssignmentId == assignmentId.Value))
+     .ToList();
             var project = _dbContext.Projects.FirstOrDefault(f => f.Id == projectId);
             var archiveName = $"{project?.Name} - {DateTime.Now:dd}.{DateTime.Now:MM}.{DateTime.Now:yyyy}.{DateTime.Now:t}.zip";
             var archivePath = Path.Combine(Directory.GetCurrentDirectory(), archiveName);

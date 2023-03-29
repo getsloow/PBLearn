@@ -71,6 +71,7 @@ namespace PBL.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Name,Description,StartDate,EndDate")] Project project)
         {
+            project.Grade = 0;
             if (ModelState.IsValid)
             {
                 _context.Add(project);

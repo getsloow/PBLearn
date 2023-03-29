@@ -143,7 +143,7 @@ a {
         }
 
         .progress-indicator > li.danger .bubble, .progress-indicator > li.danger .bubble:after, .progress-indicator > li.danger .bubble:before {
-            background-color: #d3140f;
+            background-color: #0d0c0c;
             border-color: #440605
         }
 
@@ -238,6 +238,7 @@ a {
     -ms-flex-wrap: wrap;
     flex-wrap: wrap;
     padding: 50px 0;
+    /*justify-content: flex-end;*/
 }
 
 .ag-courses_item {
@@ -288,7 +289,7 @@ a {
 
 .ag-courses-item_date {
     font-weight: bold;
-    color: #f9b234;
+    color: black;
     -webkit-transition: color .5s ease;
     -o-transition: color .5s ease;
     transition: color .5s ease

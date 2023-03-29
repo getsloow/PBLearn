@@ -1,9 +1,5 @@
 ﻿@model ProjectDetailsViewModel
 
-<style>
- 
-
-</style>
 
 <center><h1>@Model.ProjectName</h1>
     @if (User.IsInRole("Teacher"))
@@ -46,7 +42,7 @@
                    
                     @if (file.UploadedBy == User?.Identity?.Name)
                     {
-                     <button class="m-1" onclick="confirmDelete(@file.FileId)">Delete</button>
+                     <button class="btn btn-outline-danger" onclick="confirmDelete(@file.FileId)">Delete</button>
                      <form id="delete-form-@file.FileId" method="post" action="@Url.Action("Delete", "File", new { fileId = file.FileId })">
                     <input type="hidden" name="projectId" value="@Model.ProjectId" />
                     <input type="hidden" name="returnUrl" value="@Url.Action("Details", "Project", new { id = Model.ProjectId })" />
@@ -160,17 +156,17 @@ else
         @if (Model.Files != null && Model.Files.Any())
         {
 
-            <ul class="numbers" role="list">
+            <ul >
                 @foreach (var file in Model.Files)
                     @if (file.UploadedBy != "profesor@test.com")
                     {
-                        <li class="number" role="listitem">
+                        <li >
                             <div class="link-wrapper">
                                 <a href="@Url.Action("Download", "File", new { id = file.FileId })">@file.FileName</a>
 
                                 @if (file.UploadedBy == User?.Identity?.Name)
                                 {
-                                    <button class="m-1 btn btn-outline-danger text-black" onclick="confirmDelete(@file.FileId)">Delete</button>
+                                    <button class="btn btn-outline-danger" onclick="confirmDelete(@file.FileId)">Delete</button>
                                     <form id="delete-form-@file.FileId" method="post" action="@Url.Action("Delete", "File", new { fileId = file.FileId })">
                                         <input type="hidden" name="projectId" value="@Model.ProjectId" />
                                         <input type="hidden" name="returnUrl" value="@Url.Action("Details", "Project", new { id = Model.ProjectId })" />
@@ -286,4 +282,8 @@ else
 <div class="mt-auto p-2 bd-highlight">
     <a asp-action="Index" class="btn col-12 btn-secondary ">Back to List</a>
 </div>
+
+<img src="~/pic/Project_details_left.png" style="position:fixed; bottom:0%; left:0%; width:10%;" alt="" />
+<img src="~/pic/Project_details_right.png" style="position:fixed; bottom:0%; right:0%; width:10%;" alt="" />
+
 

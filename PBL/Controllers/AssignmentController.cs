@@ -49,7 +49,8 @@ namespace PBL.Controllers
                 {
                     FileId = f.Id,
                     FileLocation = f.Location,
-                    FileName = f.Name
+                    FileName = f.Name,
+                    UploadedBy = f.UploadedBy
                 }).ToList() : new List<FileViewModel>(),
                 Comments = assignment.Comments != null ? assignment.Comments.Select(c => new CommentViewModel
                 {
@@ -84,7 +85,8 @@ namespace PBL.Controllers
             var model = new AssignmentCreateViewModel
             {
 
-                ProjectId = projectId
+                ProjectId = projectId,
+                
             };
 
             return View(model);
@@ -104,7 +106,8 @@ namespace PBL.Controllers
                     Description = model.Description,
                     DueDate = model.DueDate,
                     IsCompleted = model.IsCompleted,
-                    ProjectId = model.ProjectId
+                    ProjectId = model.ProjectId,
+                    Grade = 0
                 };
 
                 _context.Assignments.Add(assignment);

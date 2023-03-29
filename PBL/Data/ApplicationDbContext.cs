@@ -6,10 +6,10 @@ using System.Collections.Generic;
 using System.Reflection.Emit;
 namespace PBL.Data
 {
-  
+
 
     public class ApplicationDbContext : IdentityDbContext<IdentityUser, IdentityRole, string>
-    
+
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
         : base(options)

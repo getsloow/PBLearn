@@ -1,72 +1,65 @@
 ﻿@model IEnumerable<Project>
-
 <center>
-    @if (User.IsInRole("Teacher")){
-        <h1>Projects List</h1>
-    <a asp-action="Create" class="btn btn-outline-success col-6">Create New Project</a>
-}else
-{
-   
-        <h1>Your currently assigned projects</h1>
-}
-<p>To see details for a specific project, click the card with its name</p>
+	@if (User.IsInRole("Teacher"))
+	{
+		<h1>Projects List</h1>
+		<a asp-action="Create" class="btn btn-outline-success col-6">Create New Project</a>
+	}
+	else
+	{
+		<h1>Your currently assigned projects</h1>
+	}
+	<p>To see details for a specific project, click the card with its name</p>
 </center>
- <hr/>
+<hr />
 <div class="ag-format-container">
-    <div class="ag-courses_box">
-
-        @foreach (var project in Model)
-        {
-             
-
-            <div class="ag-courses_item">
-                <a asp-action="Details" asp-route-id="@project.Id" class="ag-courses-item_link">
-                    <div class="ag-courses-item_bg"></div>
-
-                    <div class="ag-courses-item_title">
-                        @project.Name
-                    </div>
-                    </a>
-                    <div class="ag-courses-item_date-box">
-                        &nbsp; Due:
-                        <span class="ag-courses-item_date">
-                            @project.EndDate
-                        </span>
-                    </div>
-                @if (User.IsInRole("Teacher"))
-                {
-                    @if (project.UserEmail != null)
-                    {
-                        <div class="ag-courses-item_date-box text-black">
-                            &nbsp; Assigned to:
-                            <span class="ag-courses-item_date " style="margin-left:10px">
-                                @project.UserEmail
-                            </span>
-                        </div>
-                    }
-                    else
-                    {
-                        <div class="ag-courses-item_date-box">
-                            
-                            <span class="ag-courses-item_date " style="margin-left:10px">
-                                            Not assigned
-                            </span>
-                        </div>
-                    }
-                }
-                
-                    
-                @if (User.IsInRole("Teacher"))
-                {
-                    <a class="ag-courses-item_date" asp-controller="Assignment" asp-action="Create" asp-route-projectId="@project.Id">&nbsp;&nbsp;Create Assignment |</a>
-                    <a class="ag-courses-item_date" asp-controller="Project" asp-action="Delete" asp-route-id="@project.Id">Delete Project</a>
-                }
-             </div>
-        }
-
-        
-
-        
-
-    </div>
+	<div class="ag-courses_box">
+		@foreach (var project in Model)
+		{
+			<div class="ag-courses_item">
+				<a asp-action="Details" asp-route-id="@project.Id" class="ag-courses-item_link">
+					<div class="ag-courses-item_bg"></div>
+					<div class="ag-courses-item_title">
+						@project.Name
+					</div>
+				</a>
+				<div class="ag-courses-item_date-box">
+					<strong>
+						<font color="black">&nbsp;<u>Due</u>:</font>
+					</strong>
+					<span class="ag-courses-item_date">
+						@project.EndDate
+					</span>
+				</div>
+				@if (User.IsInRole("Teacher"))
+				{
+					@if (project.UserEmail != null)
+					{
+						<div class="ag-courses-item_date-box text-black">
+							&nbsp; Assigned to:
+							<span class="ag-courses-item_date " style="margin-left:10px">
+								@project.UserEmail
+							</span>
+						</div>
+					}
+					else
+					{
+						<div class="ag-courses-item_date-box">
+							<span class="ag-courses-item_date " style="margin-left:10px">
+								Not assigned
+							</span>
+						</div>
+					}
+				}
+				@if (User.IsInRole("Teacher"))
+				{
+					<a class="ag-courses-item_date" asp-controller="Assignment" asp-action="Create" asp-route-projectId="@project.Id">&nbsp;&nbsp;Create Assignment |</a>
+					<a class="ag-courses-item_date" asp-controller="Project" asp-action="Delete" asp-route-id="@project.Id">Delete Project</a>
+				}
+			</div>
+		}
+	</div>
 </div>
+
+<img src="pic/Project_left.png" style="position:fixed; bottom:0%; left:0%; width:10%;" alt="" />
+<img src="pic/Project_right.png" style="position:fixed; bottom:1%; right:0%; width:10%;" alt="" />
