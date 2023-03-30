@@ -208,7 +208,7 @@ else
     <button type="submit" class="btn btn-outline-primary">Add Comment</button>
 </form>
 
-@if (User.IsInRole("Teacher"))
+@if (User?.IsInRole("Teacher") == true)
 {
     @* Add any additional properties you want to display here *@
     <div style="padding-top:15px">
