@@ -16,18 +16,18 @@ namespace PBL.Data
         {
         }
 
-        public DbSet<Project> Projects { get; set; }
-        public DbSet<Assignment> Assignments { get; set; }
+        public DbSet<ProjectModel> Projects { get; set; }
+        public DbSet<AssignmentModel> Assignments { get; set; }
 
-        public DbSet<Comment> Comments { get; set; }
-        public DbSet<Models.File> Files { get; set; }
+        public DbSet<CommentModel> Comments { get; set; }
+        public DbSet<Models.FileModel> Files { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
 
-            modelBuilder.Entity<Assignment>()
+            modelBuilder.Entity<AssignmentModel>()
                 .HasOne(a => a.Project)
                 .WithMany(p => p.Assignments)
                 .HasForeignKey(a => a.ProjectId);

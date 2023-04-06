@@ -25,7 +25,7 @@ namespace PBL.Controllers
                 return RedirectToAction("Details", "Project", new { id = projectId });
             }
 
-            var comment = new Comment
+            var comment = new CommentModel
             {
                 Text = text.Trim(),
                 PostedOn = DateTime.UtcNow,

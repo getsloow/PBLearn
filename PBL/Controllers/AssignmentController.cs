@@ -100,7 +100,7 @@ namespace PBL.Controllers
 
             if (ModelState.IsValid)
             {
-                var assignment = new Assignment
+                var assignment = new AssignmentModel
                 {
                     Name = model.Name,
                     Description = model.Description,

@@ -66,6 +66,10 @@ namespace PBL.Controllers
             }
 
             var filePath = Path.Combine(Directory.GetCurrentDirectory(), "Uploads", file.Location);
+            if (filePath == null)
+            {
+                return NotFound();
+            }
             var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
 
             return File(fileStream, "application/octet-stream", file.Name);
@@ -134,7 +138,7 @@ namespace PBL.Controllers
             }
 
             // Save the file information to the database
-            var file = new Models.File
+            var file = new Models.FileModel
             {
                 Name = model.File.FileName,
                 Location = fileName,

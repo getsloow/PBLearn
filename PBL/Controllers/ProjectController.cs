@@ -69,7 +69,7 @@ namespace PBL.Controllers
         [HttpPost]
         [Authorize(Roles = "Teacher")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,Description,StartDate,EndDate")] Project project)
+        public async Task<IActionResult> Create([Bind("Id,Name,Description,StartDate,EndDate")] ProjectModel project)
         {
             project.Grade = 0;
             if (ModelState.IsValid)
