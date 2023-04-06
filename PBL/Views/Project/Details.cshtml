@@ -114,23 +114,41 @@ else
                 @if (assignment.AssignmentIsCompleted == true )
                     {
                    <li class="completed">
-                    <a asp-controller="Assignment" asp-action="Details" asp-route-id="@assignment.AssignmentId">
-                        <span class="bubble">
-                           
-                        </span>
-                    </a>
-                    @assignment.AssignmentName<br />
-                    @assignment.AssignmentDueDate
-                   
+                    @if (assignment.AssignmentDiscriminator == "TextAssignmentModel")
+                    {
+                        <a asp-controller="TextAssignment" asp-action="Details" asp-route-id="@assignment.AssignmentId" style="text-decoration:none">
+                            <span class="bubble">
+                            </span>
+                        </a>
+                    }
+                    else
+                    {
+                        <a asp-controller="Assignment" asp-action="Details" asp-route-id="@assignment.AssignmentId" style="text-decoration:none">
+                            <span class="bubble">
+                            </span>
+                        </a>
+                    }
+
                     </li>
                     }
                 else
             {
                 <li class="danger">
-                    <a asp-controller="Assignment" asp-action="Details" asp-route-id="@assignment.AssignmentId" style="text-decoration:none">
-                        <span class="bubble">
-                        </span>
-                     </a>
+                    @if (assignment.AssignmentDiscriminator == "TextAssignmentModel")
+                    {
+                        <a asp-controller="TextAssignment" asp-action="Details" asp-route-id="@assignment.AssignmentId" style="text-decoration:none">
+                            <span class="bubble">
+                            </span>
+                        </a>
+                    }
+                    else
+                    {
+                        <a asp-controller="Assignment" asp-action="Details" asp-route-id="@assignment.AssignmentId" style="text-decoration:none">
+                            <span class="bubble">
+                            </span>
+                        </a>
+                    }
+
                     @assignment.AssignmentName <br/>
                     @assignment.AssignmentDueDate
                                

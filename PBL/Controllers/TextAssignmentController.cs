@@ -2,19 +2,18 @@
 using Microsoft.EntityFrameworkCore;
 using PBL.Data;
 using PBL.Models;
-using System.ComponentModel.Design;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace PBL.Controllers
 {
-    public class AssignmentController : Controller
+    public class TextAssignmentController : Controller
     {
         private readonly ApplicationDbContext _context;
 
-        public AssignmentController(ApplicationDbContext context)
+        public TextAssignmentController(ApplicationDbContext context)
         {
             _context=context;
         }
-
         public IActionResult Index(int? id)
         {
             return View();
@@ -22,7 +21,7 @@ namespace PBL.Controllers
         public IActionResult Details(int id)
         {
             // Retrieve the assignment from the database using its ID
-            var assignment = _context.Assignments
+            var assignment = _context.TextAssignments
                             .Include(a => a.Project)
                             .Include(c => c.Comments)
                             .Include(f => f.Files)
@@ -34,19 +33,17 @@ namespace PBL.Controllers
                 return NotFound();
             }
 
-
-
-            var viewModel = new AssignmentViewModel
+            var viewModel = new TextAssignmentViewModel
             {
                 AssignmentId = assignment.Id,
                 AssignmentName = assignment.Name,
                 AssignmentDescription = assignment.Description,
                 AssignmentDueDate = assignment.DueDate,
                 AssignmentGrade = assignment.Grade,
+                AssignmentText = assignment.Text,
                 AssignmentIsCompleted = assignment.IsCompleted,
-                AssignmentIsTurnedIn= assignment.IsTurnedIn,
+                AssignmentIsTurnedIn = assignment.IsTurnedIn,
                 AssigmnemtTurnedInAt = assignment.TurnedInAt,
-                AssignmentDiscriminator = assignment.Discriminator,
                 ProjectName = assignment.Project.Name,
                 ProjectDescription = assignment.Project.Description,
                 ProjectId = assignment.Project.Id,
@@ -71,9 +68,43 @@ namespace PBL.Controllers
             return View(viewModel);
         }
 
+        public async Task<IActionResult> TurnIn(int assignmentId, string text)
+        {
+            var assignment = await _context.TextAssignments.FindAsync(assignmentId);
+            if (assignment == null)
+            {
+                return NotFound();
+            }
+
+            assignment.Text = text;
+            assignment.IsTurnedIn = true;
+            assignment.TurnedInAt = DateTime.Now;
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("Details", "TextAssignment", new { id = assignment.Id });
+
+        }
+        public async Task<IActionResult> Revert(int assignmentId)
+        {
+            var assignment = await _context.TextAssignments.FindAsync(assignmentId);
+            if (assignment == null)
+            {
+                return NotFound();
+            }
+
+           
+            assignment.IsTurnedIn = false;
+            assignment.TurnedInAt = null;
+           await _context.SaveChangesAsync();
+
+            return RedirectToAction("Details", "TextAssignment", new { id = assignment.Id });
+
+
+        }
+
         public async Task<IActionResult> GradeAssignment(int assignmentId, float AssignmentGrade)
         {
-            var assignment = await _context.Assignments.FindAsync(assignmentId);
+            var assignment = await _context.TextAssignments.FindAsync(assignmentId);
             if (assignment == null)
             {
                 return NotFound();
@@ -82,43 +113,43 @@ namespace PBL.Controllers
             assignment.Grade = AssignmentGrade;
             await _context.SaveChangesAsync();
 
-            return RedirectToAction("Details", "Assignment", new { id = assignment.Id });
+            return RedirectToAction("Details", "TextAssignment", new { id = assignment.Id });
         }
 
         public IActionResult Create(int projectId)
         {
-            var model = new AssignmentCreateViewModel
+            var model = new TextAssignmentCreateViewModel
             {
 
                 ProjectId = projectId,
-                IsTurnedIn = false
+                IsCompleted = false,
+                Text = null
 
             };
 
             return View(model);
         }
 
-
-
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(AssignmentCreateViewModel model)
+        public async Task<IActionResult> Create(TextAssignmentCreateViewModel model)
         {
 
 
             if (ModelState.IsValid)
             {
-                var assignment = new AssignmentModel
+                var assignment = new TextAssignmentModel
                 {
                     Name = model.Name,
                     Description = model.Description,
                     DueDate = model.DueDate,
                     IsCompleted = model.IsCompleted,
                     ProjectId = model.ProjectId,
-                    Grade = 0
+                    Grade = 0,
+                    Text = model.Text
                 };
 
-                _context.Assignments.Add(assignment);
+                _context.TextAssignments.Add(assignment);
                 await _context.SaveChangesAsync();
 
                 return RedirectToAction("Details", "Project", new { id = model.ProjectId });
@@ -126,37 +157,7 @@ namespace PBL.Controllers
 
             return View(model);
         }
-        public async Task<IActionResult> TurnIn(int assignmentId)
-        {
-            var assignment = await _context.Assignments.FindAsync(assignmentId);
-            if (assignment == null)
-            {
-                return NotFound();
-            }
-
-            assignment.IsTurnedIn = true;
-            assignment.TurnedInAt = DateTime.Now;
-            await _context.SaveChangesAsync();
-
-            return RedirectToAction("Details", "Assignment", new { id = assignment.Id });
-
-        }
-        public async Task<IActionResult> Revert(int assignmentId)
-        {
-            var assignment = await _context.Assignments.FindAsync(assignmentId);
-            if (assignment == null)
-            {
-                return NotFound();
-            }
 
 
-            assignment.IsTurnedIn = false;
-            assignment.TurnedInAt = null;
-            await _context.SaveChangesAsync();
-
-            return RedirectToAction("Details", "Assignment", new { id = assignment.Id });
-
-
-        }
     }
 }

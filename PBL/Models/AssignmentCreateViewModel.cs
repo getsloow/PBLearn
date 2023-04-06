@@ -17,7 +17,7 @@ namespace PBL.Models
         [DataType(DataType.Date)]
         public DateTime DueDate { get; set; }
         public bool IsCompleted { get; set; }
-
         public int ProjectId { get; set; }
+        public bool IsTurnedIn { get; set; }
     }
 }

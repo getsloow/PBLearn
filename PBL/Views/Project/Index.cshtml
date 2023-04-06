@@ -1,4 +1,8 @@
 ﻿@model IEnumerable<ProjectModel>
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+
 <center>
 	@if (User.IsInRole("Teacher"))
 	{
@@ -53,7 +57,48 @@
 				}
 				@if (User.IsInRole("Teacher"))
 				{
-					<a class="ag-courses-item_date" asp-controller="Assignment" asp-action="Create" asp-route-projectId="@project.Id">&nbsp;&nbsp;Create Assignment |</a>
+					
+					<a class="ag-courses-item_date"  href="#" data-toggle="modal" data-target="#create-assignment-modal">Create Assignment</a>
+
+
+					<div class="modal fade" id="create-assignment-modal" tabindex="-1" role="dialog" aria-labelledby="create-assignment-modal-label" aria-hidden="true">
+						<div class="modal-dialog" role="document">
+							<div class="modal-content">
+								<div class="modal-header">
+									<h5 class="modal-title" id="create-assignment-modal-label">Create Assignment</h5>
+									<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+										<span aria-hidden="true">&times;</span>
+									</button>
+								</div>
+								<div class="modal-body">
+									<p>Please select the type of assignment you want to create:</p>
+									<div class="row">
+										<div class="col-md-4">
+										<div class="form-group">
+											<a class="btn btn-primary btn-block" asp-controller="Assignment" asp-action="Create" asp-route-projectId="@project.Id">File Upload Assignment</a>
+										</div>
+										</div>
+										<div class="col-md-4">
+										<div class="form-group">
+											<a class="btn btn-primary btn-block" asp-controller="Assignment" asp-action="Create" asp-route-projectId="@project.Id">Survey Assignment</a>
+										</div>
+										</div>
+										<div class="col-md-4">
+										<div class="form-group">
+											<a class="btn btn-primary btn-block" asp-controller="TextAssignment" asp-action="Create" asp-route-projectId="@project.Id">Text Assignment</a>
+										</div>
+										</div>
+									</div>
+								</div>
+								<div class="modal-footer">
+									<button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+								</div>
+							</div>
+						</div>
+					</div>
+
+
+
 					<a class="ag-courses-item_date" asp-controller="Project" asp-action="Delete" asp-route-id="@project.Id">Delete Project</a>
 				}
 			</div>
@@ -63,3 +108,6 @@
 
 <img src="pic/Project_left.png" style="position:fixed; bottom:0%; left:0%; width:10%;" alt="" />
 <img src="pic/Project_right.png" style="position:fixed; bottom:1%; right:0%; width:10%;" alt="" />
+
+
+

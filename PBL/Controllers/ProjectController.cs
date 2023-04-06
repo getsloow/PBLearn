@@ -190,7 +190,9 @@ namespace PBL.Controllers
                     AssignmentName = a.Name,
                     AssignmentDescription= a.Description,
                     AssignmentDueDate = a.DueDate,
-                    AssignmentIsCompleted = a.IsCompleted
+                    AssignmentIsCompleted = a.IsCompleted,
+                    AssignmentDiscriminator = a.Discriminator
+                    
                 }).OrderBy(a => a.AssignmentDueDate).ToList()
                 ,
                 Files = proiect.Files?.Select( p => new FileViewModel

@@ -398,3 +398,7 @@ a {
     font-size: 20px;
     font-weight: bold;
 }
+.text-area {
+    height: 300px;
+    display: flex;
+}

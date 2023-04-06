@@ -18,6 +18,7 @@ namespace PBL.Data
 
         public DbSet<ProjectModel> Projects { get; set; }
         public DbSet<AssignmentModel> Assignments { get; set; }
+        public DbSet<TextAssignmentModel> TextAssignments { get; set; }
 
         public DbSet<CommentModel> Comments { get; set; }
         public DbSet<Models.FileModel> Files { get; set; }

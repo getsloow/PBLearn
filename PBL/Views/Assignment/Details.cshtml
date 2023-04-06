@@ -126,6 +126,29 @@ else
             </ul>
 
             <a class="btn btn-primary" href="@Url.Action("DownloadAll", "File", new { assignmentId = Model.AssignmentId })">Download All</a>
+            @if (Model.AssignmentIsTurnedIn != true)
+            {
+                <strong>Not turned in!</strong>
+            <form asp-controller="Assignment" asp-action="TurnIn" method="post">
+                    <input type="hidden" name="assignmentId" value="@Model?.AssignmentId" />
+                    <button type="submit" class="btn btn-outline-primary">Turn In</button>
+
+            </form>
+            }
+            else
+            {
+                <strong>
+                    Turned in @if (Model.AssigmnemtTurnedInAt > Model.AssignmentDueDate)
+                    {
+                        <strong><font color="red">LATE</font></strong>
+                    } on @Model.AssigmnemtTurnedInAt
+                </strong>
+                <button class="btn btn-outline-danger" onclick="cancelSubmission(@Model?.AssignmentId)">Cancel Submission</button>
+                <form id="cancel-form-@Model?.AssignmentId" method="post" action="@Url.Action("Revert", "Assignment", new { AssignmentId = @Model.AssignmentId })">
+                    <input type="hidden" name="assignmentId" value="@Model?.AssignmentId" />
+                    <input type="hidden" name="returnUrl" value="@Url.Action("Details", "Assignment", new { id = Model?.AssignmentId })" />
+                </form>
+            }
         }
         else
         {
@@ -138,7 +161,13 @@ else
                 }
             }
         </script>
-
+        <script>
+            function cancelSubmission(id) {
+                if (confirm("Are you sure you want to cancel the submission?")) {
+                    document.getElementById("cancel-form-" + id).submit();
+                }
+            }
+        </script>
 
     </div>
     <div style="float:right;width:50%">
