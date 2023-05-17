@@ -1,6 +1,164 @@
 ﻿@{
     ViewData["Title"] = "Privacy Policy";
 }
-<h1>@ViewData["Title"]</h1>
+@*<h1>@ViewData["Title"]</h1>*@
 
-<p>Use this page to detail your site's privacy policy.</p>
+<h1>Test page</h1>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    color: rgb(0, 0, 0);
+}
+    #location {
+    margin-top: 20px;
+    font-weight: bold;
+}
+.cta {
+    padding: 9px 25px;
+    background-color: rgba(0, 136, 169, 1);
+    border: none;
+    border-radius: 50px;
+    cursor: pointer;
+    transition: background-color 0.3s ease 0s;
+}
+
+h1, textarea, button {
+    margin-bottom: 20px;
+}
+.container{
+    display: flex;
+    flex-direction: row;
+}
+.geolocation{
+    padding-right: 500px;
+}
+
+    </style>
+
+    <div class="container">
+        @*<div class="geolocation">
+            <h1>Geolocation test:</h1>
+            <button class="cta" onclick="getLocation()">Get Location</button>
+            <div id="location"></div>
+        </div>*@
+        <div class="LZW">
+            <h1>LZW Compression feature:</h1>
+            <textarea id="inputText" rows="6" cols="50" placeholder="Enter text to compress"></textarea>
+            <br>
+            <button class="cta" onclick="compressText()">Compress</button>
+            <button class="cta" onclick="decompressText()">Decompress</button>
+            <br>
+            <textarea id="outputText" rows="6" cols="50" readonly></textarea>
+        </div>
+    </div>
+</head>
+
+<iframe style="border-radius:12px" src="https://open.spotify.com/embed/episode/04GVZzykgtJVeAkaFWVXbD?utm_source=generator" width="100%" height="352" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+
+
+<script>
+    function compressText() {
+        const inputText = document.getElementById("inputText").value;
+        const compressed = lzwCompress(inputText);
+        document.getElementById("outputText").value = compressed.join(",");
+    }
+
+    function decompressText() {
+        const compressedText = document.getElementById("outputText").value.split(",").map(Number);
+        const decompressed = lzwDecompress(compressedText);
+        document.getElementById("outputText").value = decompressed;
+    }
+
+    function lzwCompress(input) {
+        const dict = new Map();
+        let currentCharCode = 256;
+        let current = "";
+        const result = [];
+
+        for (const char of input) {
+            const temp = current + char;
+            if (dict.has(temp)) {
+                current = temp;
+            } else {
+                const code = current.length === 1 ? current.charCodeAt(0) : dict.get(current);
+                result.push(code);
+                dict.set(temp, currentCharCode++);
+                current = char;
+            }
+        }
+
+        if (current.length > 0) {
+            const code = current.length === 1 ? current.charCodeAt(0) : dict.get(current);
+            result.push(code);
+        }
+
+        return result;
+    }
+
+    function lzwDecompress(compressed) {
+        const dict = new Map();
+        let currentCharCode = 256;
+
+        let previous = String.fromCharCode(compressed[0]);
+        let result = previous;
+
+        for (let i = 1; i < compressed.length; i++) {
+            const code = compressed[i];
+            const current = code < currentCharCode ? (code < 256 ? String.fromCharCode(code) : dict.get(code)) : previous + previous[0];
+
+            result += current;
+            dict.set(currentCharCode++, previous + current[0]);
+            previous = current;
+        }
+
+        return result;
+    }
+
+    const API_KEY = "459b9a5fbb47463d9a52c84faff2c6a8";
+
+    function getLocation() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(showPosition, showError);
+        } else {
+            document.getElementById("location").innerHTML = "Geolocation is not supported by this browser.";
+        }
+    }
+
+    function showPosition(position) {
+        let lat = position.coords.latitude;
+        let lng = position.coords.longitude;
+        fetch(`https://api.opencagedata.com/geocode/v1/json?q=${lat}+${lng}&key=${API_KEY}`)
+            .then(response => response.json())
+            .then(data => {
+                let city = data.results[0].components.city || data.results[0].components.town || data.results[0].components.village;
+                let country = data.results[0].components.country;
+                document.getElementById("location").innerHTML = `City: ${city}<br>Country: ${country}`;
+            })
+            .catch(error => {
+                document.getElementById("location").innerHTML = "Unable to retrieve city and country.";
+            });
+    }
+
+    function showError(error) {
+        switch (error.code) {
+            case error.PERMISSION_DENIED:
+                document.getElementById("location").innerHTML = "User denied the request for Geolocation."
+                break;
+            case error.POSITION_UNAVAILABLE:
+                document.getElementById("location").innerHTML = "Location information is unavailable."
+                break;
+            case error.TIMEOUT:
+                document.getElementById("location").innerHTML = "The request to get user location timed out."
+                break;
+            case error.UNKNOWN_ERROR:
+                document.getElementById("location").innerHTML = "An unknown error occurred."
+                break;
+        }
+    }
+
+
+</script>

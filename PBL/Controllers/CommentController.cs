@@ -1,72 +1,61 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using PBL.Data;
-using PBL.Models;
+using PBL.Services.Interfaces;
 
-namespace PBL.Controllers
+namespace PBL.Controllers;
+
+[Authorize]
+public class CommentController : Controller
 {
+    private readonly ICommentService _commentService;
 
-    public class CommentController : Controller
+    public CommentController(ICommentService commentService)
     {
-        private readonly ApplicationDbContext _context;
+        _commentService=commentService;
+    }
 
-        public CommentController(ApplicationDbContext context)
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public IActionResult AddComment(int? projectId, string text, int? assignmentId)
+    {
+        try
         {
-            _context = context;
+            _commentService.AddComment(projectId, text, assignmentId, User.Identity!.Name!);
         }
-        [Authorize]
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> AddComment(int? projectId, string text, int? assignmentId)
+        catch (ArgumentException ex)
         {
-            if (string.IsNullOrWhiteSpace(text))
-            {
-                TempData["ErrorMessage"] = "Comment text is required.";
-                return RedirectToAction("Details", "Project", new { id = projectId });
-            }
-
-            var comment = new CommentModel
-            {
-                Text = text.Trim(),
-                PostedOn = DateTime.UtcNow,
-                ProjectId = projectId,
-                AssignmentId = assignmentId,
-                PostedBy = User?.Identity?.Name // or use a custom user identity if you have implemented one
-            };
-
-            _context.Comments.Add(comment);
-            await _context.SaveChangesAsync();
-
-            TempData["SuccessMessage"] = "Comment added successfully.";
-            if (assignmentId != null) { return RedirectToAction("Details", "Assignment", new { id = assignmentId }); }
-            if (projectId != null) { return RedirectToAction("Details", "Project", new { id = projectId }); }
-            return View();
-           
+            TempData["ErrorMessage"] = ex.Message;
         }
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteComment(int commentId, string view)
+        RedirectToActionResult redirectToAction = Redirect(projectId, assignmentId);
+
+        return redirectToAction;
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public IActionResult DeleteComment(int commentId, int? projectId, int? assignmentId)
+    {
+        try
         {
-            var comment = await _context.Comments.FindAsync(commentId);
-
-            if (comment == null)
-            {
-                return NotFound();
-            }
-
-            _context.Comments.Remove(comment);
-            await _context.SaveChangesAsync();
-
-            if (view == "AssignmentDetails")
-                return RedirectToAction("Details", "Assignment", new { id = comment.AssignmentId });
-            else if (view == "ProjectDetails")
-                return RedirectToAction("Details", "Project", new { id = comment.ProjectId });
-              else
-            {
-                return View();
-            }
+            _commentService.DeleteComment(commentId);
+        }
+        catch (Exception ex)
+        {
+            TempData["ErrorMessage"] = ex.Message;
         }
 
+        RedirectToActionResult redirectToAction = Redirect(projectId, assignmentId);
+
+        return redirectToAction;
+    }
+
+    private RedirectToActionResult Redirect(int? projectId, int? assignmentId)
+    {
+        return assignmentId != null
+            ? RedirectToAction("Details", "Assignment", new { id = assignmentId })
+            : projectId != null
+                  ? RedirectToAction("Details", "Project", new { id = projectId })
+                : RedirectToAction("Index", "Home");
     }
 }
