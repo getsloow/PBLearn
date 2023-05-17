@@ -1,4 +1,5 @@
-﻿using PBL.Models;
+﻿using Microsoft.AspNetCore.Mvc.Rendering;
+using PBL.Models;
 
 namespace PBL.Services.Interfaces
 {
@@ -10,5 +11,7 @@ namespace PBL.Services.Interfaces
         Task CreateAsync(ProjectModel project);
         Task<List<ProjectModel>> GetAllProjects();
         Task<List<ProjectModel>> GetAllProjectsByEmail(string userEmail);
+        Task<List<SelectListItem>> GetAllocatedProjects();
+        Task<List<SelectListItem>> GetUnallocatedProjects();
     }
 }

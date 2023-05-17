@@ -36,12 +36,7 @@ public class AssignmentController : Controller
 
     public IActionResult Create(int projectId)
     {
-        var model = new AssignmentModel
-        {
-            ProjectId = projectId
-
-        };
-        return View(model);
+        return View(new AssignmentModel { ProjectId = projectId });
     }
 
     [HttpPost]

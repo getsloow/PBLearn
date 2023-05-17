@@ -1,163 +1,69 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using PBL.Controllers.Helpers;
 using PBL.Data;
 using PBL.Models;
+using PBL.Services;
+using PBL.Services.Interfaces;
 using static System.Net.Mime.MediaTypeNames;
 
 namespace PBL.Controllers
 {
     public class TextAssignmentController : Controller
     {
-        private readonly ApplicationDbContext _context;
-
-        public TextAssignmentController(ApplicationDbContext context)
+        private readonly ITextAssignmentService _textAssignmentService;
+        public TextAssignmentController(ITextAssignmentService textAssignmentService)
         {
-            _context=context;
+            _textAssignmentService=textAssignmentService;
         }
         public IActionResult Index(int? id)
         {
             return View();
         }
-        public IActionResult Details(int id)
+        public async Task<IActionResult> Details(int id)
         {
-            // Retrieve the assignment from the database using its ID
-            var assignment = _context.TextAssignments
-                            .Include(a => a.Project)
-                            .Include(c => c.Comments)
-                            .Include(f => f.Files)
-                            .FirstOrDefault(a => a.Id == id);
+            var assignment = await _textAssignmentService.GetTextAssignmentAsync(id);
 
             if (assignment == null)
             {
-                // If the assignment was not found, return a 404 Not Found status code
                 return NotFound();
             }
-
-            var viewModel = new TextAssignmentViewModel
-            {
-                AssignmentId = assignment.Id,
-                AssignmentName = assignment.Name,
-                AssignmentDescription = assignment.Description,
-                AssignmentDueDate = (DateTime)assignment.DueDate!,
-                AssignmentGrade = assignment.Grade,
-                AssignmentText = assignment.Text,
-                AssignmentIsCompleted = (bool)assignment.IsCompleted!,
-                AssignmentIsTurnedIn = (bool)assignment.IsTurnedIn!,
-                AssigmnemtTurnedInAt = assignment.TurnedInAt,
-                ProjectName = assignment.Project.Name,
-                ProjectDescription = assignment.Project.Description,
-                ProjectId = assignment.Project.Id,
-                Files = assignment.Files != null ? assignment.Files.Select(f => new FileViewModel
-                {
-                    FileId = f.Id,
-                    FileLocation = f.Location,
-                    FileName = f.Name,
-                    UploadedBy = f.UploadedBy
-                }).ToList() : new List<FileViewModel>(),
-                Comments = assignment.Comments != null ? assignment.Comments.Select(c => new CommentViewModel
-                {
-                    CommentId = c.Id,
-                    CommentText = c.Text,
-                    CreatedAt = c.PostedOn,
-                    CreatedBy = c.PostedBy
-                }
-                ).ToList() : new List<CommentViewModel>()
-            };
-
-            // Pass the assignment to the view
+            var viewModel = TextAssignmentHelper.MapToTextAssignmentViewModel(assignment);
             return View(viewModel);
         }
 
         public async Task<IActionResult> TurnIn(int assignmentId, string text)
         {
-            var assignment = await _context.TextAssignments.FindAsync(assignmentId);
-            if (assignment == null)
-            {
-                return NotFound();
-            }
-
-            assignment.Text = text;
-            assignment.IsTurnedIn = true;
-            assignment.TurnedInAt = DateTime.Now;
-            await _context.SaveChangesAsync();
-
-            return RedirectToAction("Details", "TextAssignment", new { id = assignment.Id });
-
+            await _textAssignmentService.TurnInAsync(assignmentId, text);
+            return RedirectToAction("Details", "TextAssignment", new { id = assignmentId });
         }
         public async Task<IActionResult> Revert(int assignmentId)
         {
-            var assignment = await _context.TextAssignments.FindAsync(assignmentId);
-            if (assignment == null)
-            {
-                return NotFound();
-            }
-
-           
-            assignment.IsTurnedIn = false;
-            assignment.TurnedInAt = null;
-           await _context.SaveChangesAsync();
-
-            return RedirectToAction("Details", "TextAssignment", new { id = assignment.Id });
-
-
+            await _textAssignmentService.RevertAsync(assignmentId);
+            return RedirectToAction("Details", "TextAssignment", new { id = assignmentId });
         }
 
-        public async Task<IActionResult> GradeAssignment(int assignmentId, float AssignmentGrade)
+        public async Task<IActionResult> GradeAssignment(int assignmentId, float assignmentGrade)
         {
-            var assignment = await _context.TextAssignments.FindAsync(assignmentId);
-            if (assignment == null)
-            {
-                return NotFound();
-            }
-
-            assignment.Grade = AssignmentGrade;
-            await _context.SaveChangesAsync();
-
-            return RedirectToAction("Details", "TextAssignment", new { id = assignment.Id });
+            await _textAssignmentService.GradeAsync(assignmentId, assignmentGrade);
+            return RedirectToAction("Details", "TextAssignment", new { id = assignmentId });
         }
 
         public IActionResult Create(int projectId)
         {
-            var model = new TextAssignmentCreateViewModel
-            {
-
-                ProjectId = projectId,
-                IsCompleted = false,
-                Text = null
-
-            };
-
-            return View(model);
+            return View(new TextAssignmentModel { ProjectId = projectId });
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(TextAssignmentCreateViewModel model)
+        public async Task<IActionResult> Create(TextAssignmentModel model, int projectId)
         {
-
-
             if (ModelState.IsValid)
             {
-                var assignment = new TextAssignmentModel
-                {
-                    Name = model.Name,
-                    Description = model.Description,
-                    DueDate = model.DueDate,
-                    IsCompleted = model.IsCompleted,
-                    ProjectId = model.ProjectId,
-                    Grade = 0,
-                    Text = model.Text
-                };
-
-                _context.TextAssignments.Add(assignment);
-                await _context.SaveChangesAsync();
-
+                await _textAssignmentService.CreateAsync(model, projectId);
                 return RedirectToAction("Details", "Project", new { id = model.ProjectId });
             }
-
             return View(model);
         }
-
-
     }
 }

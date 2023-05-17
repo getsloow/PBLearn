@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using PBL.Models;
 using PBL.Repositories.Interfaces;
@@ -21,6 +22,27 @@ public class ProjectService : IProjectService
     public async Task<List<ProjectModel>> GetAllProjects()
     {
         return await _repositoryWrapper.ProjectRepository.FindAll().ToListAsync();
+    }
+    public async Task<List<SelectListItem>> GetAllocatedProjects()
+    {
+            
+        var projects = await _repositoryWrapper.ProjectRepository.FindByCondition(u => u.UserEmail! != null).ToListAsync();
+        var projectList = new List<SelectListItem>();
+        foreach (var project in projects)
+        {
+            projectList.Add(new SelectListItem() { Value = project.Id.ToString(), Text = project.Name });
+        }
+        return projectList;
+    }
+    public async Task<List<SelectListItem>> GetUnallocatedProjects()
+    {
+        var projects = await _repositoryWrapper.ProjectRepository.FindByCondition(u => u.UserEmail! == null).ToListAsync();
+        var projectList = new List<SelectListItem>();
+        foreach (var project in projects)
+        {
+            projectList.Add(new SelectListItem() { Value = project.Id.ToString(), Text = project.Name });
+        }
+        return projectList;
     }
     public async Task<ProjectModel?> DetailsAsync(int? id)
     {

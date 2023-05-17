@@ -10,6 +10,7 @@ namespace PBL.Repositories
         private IProjectRepository _projectRepository;
         private IAssignmentRepository _assignmentRepository;
         private IFileRepository _fileRepository;
+        private ITextAssignmentRepository _textAssignmentRepository;
 
         public IFileRepository FileRepository
         {
@@ -45,6 +46,19 @@ namespace PBL.Repositories
                 }
 
                 return _assignmentRepository;
+            }
+        }
+
+        public ITextAssignmentRepository TextAssignmentRepository
+        {
+            get
+            {
+                if (_textAssignmentRepository == null)
+                {
+                    _textAssignmentRepository = new TextAssignmentRepository(_dbContext);
+                }
+
+                return _textAssignmentRepository;
             }
         }
         public IProjectRepository ProjectRepository

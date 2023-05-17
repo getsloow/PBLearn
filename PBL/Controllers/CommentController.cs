@@ -43,7 +43,7 @@ public class CommentController : Controller
             TempData["ErrorMessage"] = ex.Message;
         }
 
-        return Redirect(projectId, assignmentId); 
+        return Redirect(projectId, assignmentId);
     }
 
     private RedirectToActionResult Redirect(int? projectId, int? assignmentId)
