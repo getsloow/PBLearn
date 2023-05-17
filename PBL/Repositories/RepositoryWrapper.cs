@@ -8,7 +8,21 @@ namespace PBL.Repositories
         private readonly ApplicationDbContext _dbContext;
         private ICommentRepository _commentRepository;
         private IProjectRepository _projectRepository;
+        private IAssignmentRepository _assignmentRepository;
+        private IFileRepository _fileRepository;
 
+        public IFileRepository FileRepository
+        {
+            get
+            {
+                if (_fileRepository == null)
+                {
+                    _fileRepository = new FileRepository(_dbContext);
+                }
+
+                return _fileRepository;
+            }
+        }
         public ICommentRepository CommentRepository
         {
             get
@@ -19,6 +33,18 @@ namespace PBL.Repositories
                 }
 
                 return _commentRepository;
+            }
+        }
+        public IAssignmentRepository AssignmentRepository
+        {
+            get
+            {
+                if (_assignmentRepository == null)
+                {
+                    _assignmentRepository = new AssignmentRepository(_dbContext);
+                }
+
+                return _assignmentRepository;
             }
         }
         public IProjectRepository ProjectRepository

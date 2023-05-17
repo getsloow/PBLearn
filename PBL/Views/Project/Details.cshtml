@@ -43,7 +43,7 @@
                     @if (file.UploadedBy == User?.Identity?.Name)
                     {
                      <button class="btn btn-outline-danger" onclick="confirmDelete(@file.FileId)">Delete</button>
-                     <form id="delete-form-@file.FileId" method="post" action="@Url.Action("Delete", "File", new { fileId = file.FileId })">
+                     <form id="delete-form-@file.FileId" method="post" action="@Url.Action("Delete", "File", new { fileId = file.FileId, projectId = Model.ProjectId })">
                     <input type="hidden" name="projectId" value="@Model.ProjectId" />
                     <input type="hidden" name="returnUrl" value="@Url.Action("Details", "Project", new { id = Model.ProjectId })" />
                     </form>

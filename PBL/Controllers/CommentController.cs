@@ -27,9 +27,7 @@ public class CommentController : Controller
             TempData["ErrorMessage"] = ex.Message;
         }
 
-        RedirectToActionResult redirectToAction = Redirect(projectId, assignmentId);
-
-        return redirectToAction;
+        return Redirect(projectId, assignmentId);
     }
 
     [HttpPost]
@@ -45,9 +43,7 @@ public class CommentController : Controller
             TempData["ErrorMessage"] = ex.Message;
         }
 
-        RedirectToActionResult redirectToAction = Redirect(projectId, assignmentId);
-
-        return redirectToAction;
+        return Redirect(projectId, assignmentId); 
     }
 
     private RedirectToActionResult Redirect(int? projectId, int? assignmentId)

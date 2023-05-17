@@ -1,6 +1,6 @@
 ﻿using PBL.Models;
 
-namespace PBL.Controllers;
+namespace PBL.Controllers.Helpers;
 
 public static class ProjectHelper
 {
@@ -19,9 +19,9 @@ public static class ProjectHelper
             {
                 AssignmentId = a.Id,
                 AssignmentName = a.Name,
-                AssignmentDescription= a.Description,
-                AssignmentDueDate = a.DueDate,
-                AssignmentIsCompleted = a.IsCompleted,
+                AssignmentDescription = a.Description,
+                AssignmentDueDate = (DateTime)a.DueDate!,
+                AssignmentIsCompleted = (bool)a.IsCompleted!,
                 AssignmentDiscriminator = a.Discriminator
 
             }).OrderBy(a => a.AssignmentDueDate).ToList()

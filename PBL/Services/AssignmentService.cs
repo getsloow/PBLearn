@@ -1,154 +1,70 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using PBL.Data;
 using PBL.Models;
+using PBL.Repositories.Interfaces;
 using PBL.Services.Interfaces;
 
 namespace PBL.Services
 {
     public class AssignmentService : IAssignmentService
     {
-        private readonly ApplicationDbContext _context;
-
-        public AssignmentService(ApplicationDbContext context)
+        private readonly IRepositoryWrapper _repositoryWrapper;
+        public AssignmentService(IRepositoryWrapper repositoryWrapper)
         {
-            _context = context;
+            _repositoryWrapper = repositoryWrapper;
         }
 
-        public async Task<List<AssignmentViewModel>> GetAssignmentsByProjectId(int projectId)
+        public async Task<AssignmentModel?> GetAssignmentAsync(int? id)
         {
-            var assignments = await _context.Assignments
-                .Include(a => a.Project)
-                .Where(a => a.ProjectId == projectId)
-                .OrderByDescending(a => a.DueDate)
-                .ToListAsync();
-
-            return assignments.Select(a => new AssignmentViewModel
-            {
-                AssignmentId = a.Id,
-                AssignmentName = a.Name,
-                AssignmentDescription = a.Description,
-                AssignmentDueDate = a.DueDate,
-                AssignmentGrade = a.Grade,
-                AssignmentIsCompleted = a.IsCompleted,
-                AssignmentIsTurnedIn = a.IsTurnedIn,
-                AssigmnemtTurnedInAt = a.TurnedInAt,
-                AssignmentDiscriminator = a.Discriminator,
-                ProjectName = a.Project.Name,
-                ProjectDescription = a.Project.Description,
-                ProjectId = a.Project.Id
-            }).ToList();
+            return await _repositoryWrapper.AssignmentRepository.FindByCondition(p => p.Id == id)
+                   .Include(p => p.Project)
+                   .Include(a => a.Files)
+                   .Include(c => c.Comments)
+                   .FirstOrDefaultAsync(n => n.Id == id);
+        }
+        public async Task GradeAsync(int assignmentId, float assignmentGrade)
+        {
+            var assignment = await _repositoryWrapper.AssignmentRepository.FindByCondition(p => p.Id == assignmentId).FirstOrDefaultAsync();
+            assignment!.Grade = assignmentGrade;
+            _repositoryWrapper.AssignmentRepository.Update(assignment);
+            _repositoryWrapper.Save();
         }
 
-        public async Task<AssignmentViewModel> GetAssignment(int id)
-        {
-            var assignment = await _context.Assignments
-                .Include(a => a.Project)
-                .Include(c => c.Comments)
-                .Include(f => f.Files)
-                .FirstOrDefaultAsync(a => a.Id == id);
-
-            if (assignment == null)
-            {
-                return null;
-            }
-
-            var viewModel = new AssignmentViewModel
-            {
-                AssignmentId = assignment.Id,
-                AssignmentName = assignment.Name,
-                AssignmentDescription = assignment.Description,
-                AssignmentDueDate = assignment.DueDate,
-                AssignmentGrade = assignment.Grade,
-                AssignmentIsCompleted = assignment.IsCompleted,
-                AssignmentIsTurnedIn = assignment.IsTurnedIn,
-                AssigmnemtTurnedInAt = assignment.TurnedInAt,
-                AssignmentDiscriminator = assignment.Discriminator,
-                ProjectName = assignment.Project.Name,
-                ProjectDescription = assignment.Project.Description,
-                ProjectId = assignment.Project.Id,
-                Files = assignment.Files != null ? assignment.Files.Select(f => new FileViewModel
-                {
-                    FileId = f.Id,
-                    FileLocation = f.Location,
-                    FileName = f.Name,
-                    UploadedBy = f.UploadedBy
-                }).ToList() : new List<FileViewModel>(),
-                Comments = assignment.Comments != null ? assignment.Comments.Select(c => new CommentViewModel
-                {
-                    CommentId = c.Id,
-                    CommentText = c.Text,
-                    CreatedAt = c.PostedOn,
-                    CreatedBy = c.PostedBy
-                }).ToList() : new List<CommentViewModel>()
-            };
-
-            return viewModel;
-        }
-
-        public async Task<AssignmentModel> CreateAssignment(AssignmentCreateViewModel model)
+        public async Task CreateAsync(AssignmentModel model, int projectId)
         {
             var assignment = new AssignmentModel
             {
+               
                 Name = model.Name,
                 Description = model.Description,
+                Grade = 0,
                 DueDate = model.DueDate,
-                IsCompleted = model.IsCompleted,
-                ProjectId = model.ProjectId,
-                //Discriminator= model.Discriminator,
-                Grade = 0
+                IsCompleted = false,
+                IsTurnedIn = false,
+                ProjectId = model.ProjectId
             };
 
-            _context.Assignments.Add(assignment);
-            await _context.SaveChangesAsync();
-
-            return assignment;
+            _repositoryWrapper.AssignmentRepository.Create(assignment);
+            _repositoryWrapper.Save();
         }
 
-        public async Task<AssignmentModel> GradeAssignment(int assignmentId, float grade)
+        public async Task TurnInAsync(int assignmentId)
         {
-            var assignment = await _context.Assignments.FindAsync(assignmentId);
-            if (assignment == null)
-            {
-                return null;
-            }
-
-            assignment.Grade = grade;
-            await _context.SaveChangesAsync();
-
-            return assignment;
-        }
-
-        public async Task<bool> TurnInAssignment(int assignmentId)
-        {
-            var assignment = await _context.Assignments.FindAsync(assignmentId);
-            if (assignment == null)
-            {
-                return false;
-            }
-
-            assignment.IsTurnedIn = true;
+            var assignment = await _repositoryWrapper.AssignmentRepository.FindByCondition(p => p.Id == assignmentId).FirstOrDefaultAsync();
+            assignment!.IsTurnedIn = true;
             assignment.TurnedInAt = DateTime.Now;
-            await _context.SaveChangesAsync();
-
-            return true;
+            _repositoryWrapper.AssignmentRepository.Update(assignment);
+            _repositoryWrapper.Save();
         }
 
-        public async Task<bool> RevertAssignment(int assignmentId)
+        public async Task RevertAsync(int assignmentId)
         {
-            var assignment = await _context.Assignments.FindAsync(assignmentId);
-            if (assignment == null)
-            {
-                return false;
-            }
-
-            assignment.IsTurnedIn = false;
+            var assignment = await _repositoryWrapper.AssignmentRepository.FindByCondition(p => p.Id == assignmentId).FirstOrDefaultAsync();
+            assignment!.IsTurnedIn = false;
             assignment.TurnedInAt = null;
-            await _context.SaveChangesAsync();
-
-            return true;
+            _repositoryWrapper.AssignmentRepository.Update(assignment);
+            _repositoryWrapper.Save();
         }
     }
-    
-
-
 }

@@ -1,122 +1,37 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.CodeAnalysis;
-using Microsoft.EntityFrameworkCore;
-using PBL.Data;
 using PBL.Models;
-using System.IO.Compression;
+using PBL.Services.Interfaces;
 
 namespace PBL.Controllers
 {
     public class FileController : Controller
     {
-        private readonly ApplicationDbContext _dbContext;
-        private readonly IWebHostEnvironment _webHostEnvironment;
+        private readonly IFileService _fileService;
 
-        public FileController(ApplicationDbContext dbContext, IWebHostEnvironment webHostEnvironment)
+        public FileController(IFileService fileService)
         {
-            _dbContext = dbContext;
-            _webHostEnvironment=webHostEnvironment;
+            _fileService = fileService;
         }
 
         [HttpPost]
-        public async Task<IActionResult> Delete(int fileId)
+        public async Task<IActionResult> Delete(int fileId, int? projectId, int? assignmentId)
         {
-            var file = await _dbContext.Files.FindAsync(fileId);
-            var type = "";
-
-
-            if (file == null)
-            {
-                return NotFound();
-            }
-            else
-            {
-                if (file.AssignmentId != null)
-                {
-                    type = "a";
-                }
-                else
-                {
-                    type = "p";
-                }
-            }
-
-            // Delete the file from the file system
-            var filePath = Path.Combine(_webHostEnvironment.WebRootPath, "uploads", file.Location);
-            if (System.IO.File.Exists(filePath))
-            {
-                System.IO.File.Delete(filePath);
-            }
-
-            // Delete the file from the database
-            _dbContext.Files.Remove(file);
-            await _dbContext.SaveChangesAsync();
-
-            if (type == "a") { return RedirectToAction("Details", "Assignment", new { id = file.AssignmentId }); }
-            else if (type == "p") { return RedirectToAction("Details", "Project", new { id = file.ProjectId }); }
-            else
-                return View();
+            await _fileService.Delete(fileId);
+            return Redirect(projectId, assignmentId);
         }
         public IActionResult Download(int id)
         {
-            var file = _dbContext.Files.FirstOrDefault(f => f.Id == id);
-            if (file == null)
-            {
-                return NotFound();
-            }
+            var fileStream = _fileService.Download(id);
+            var fileName = _fileService.GetFileName(id);
 
-            var filePath = Path.Combine(Directory.GetCurrentDirectory(), "Uploads", file.Location);
-            if (filePath == null)
-            {
-                return NotFound();
-            }
-            var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
-
-            return File(fileStream, "application/octet-stream", file.Name);
+            return File((Stream)fileStream, "application/octet-stream", fileName);
         }
 
         public IActionResult DownloadAll(int? projectId, int? assignmentId)
         {
-            // Get all files that match the projectId or assignmentId
-            var files = _dbContext.Files
-     .Where(f => (projectId.HasValue && f.ProjectId == projectId.Value) || (assignmentId.HasValue && f.AssignmentId == assignmentId.Value))
-     .ToList();
-            var project = _dbContext.Projects.FirstOrDefault(f => f.Id == projectId);
-            var archiveName = $"{project?.Name} - {DateTime.Now:dd}.{DateTime.Now:MM}.{DateTime.Now:yyyy}.{DateTime.Now:t}.zip";
-            var archivePath = Path.Combine(Directory.GetCurrentDirectory(), archiveName);
-            using (var archive = ZipFile.Open(archivePath, ZipArchiveMode.Create))
-            {
-                // Add each file to the archive
-                foreach (var file in files)
-                {
-                    var filePath = Path.Combine(Directory.GetCurrentDirectory(), "Uploads", file.Location);
-                    if (System.IO.File.Exists(filePath))
-                    {
-                        var archiveEntry = archive.CreateEntry(file.Name);
-                        using (var stream = archiveEntry.Open())
-                        using (var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read))
-                        {
-                            fileStream.CopyTo(stream);
-                        }
-                    }
-                }
-            }
-
-            // Download the archive file
-            var archiveStream = new FileStream(archivePath, FileMode.Open, FileAccess.Read);
+            var archiveStream = _fileService.DownloadAll(projectId, assignmentId);
+            var archiveName = _fileService.GetProjectName(projectId, assignmentId);
             return File(archiveStream, "application/zip", archiveName);
-        }
-
-        [HttpGet]
-        public IActionResult Upload(int? projectId, int? assignmentId, string? uploadedBy)
-        {
-            var model = new FileUploadViewModel
-            {
-                ProjectId = projectId,
-                AssignmentId = assignmentId,
-                UploadedBy = uploadedBy
-            };
-            return View(model);
         }
 
         [HttpPost]
@@ -128,31 +43,16 @@ namespace PBL.Controllers
                 return View(model);
             }
 
-            // Save the file to the Uploads folder
-            var uploadsFolder = Path.Combine(Directory.GetCurrentDirectory(), "Uploads");
-            var fileName = Guid.NewGuid().ToString() + Path.GetExtension(model.File.FileName);
-            var filePath = Path.Combine(uploadsFolder, fileName);
-            using (var stream = new FileStream(filePath, FileMode.Create))
-            {
-                await model.File.CopyToAsync(stream);
-            }
-
-            // Save the file information to the database
-            var file = new Models.FileModel
-            {
-                Name = model.File.FileName,
-                Location = fileName,
-                ProjectId = projectId,
-                AssignmentId = assignmentId,
-                UploadedBy = uploadedBy
-            };
-            _dbContext.Files.Add(file);
-            await _dbContext.SaveChangesAsync();
-
-            if (assignmentId != null) { return RedirectToAction("Details", "Assignment", new { id = assignmentId }); }
-            else if (projectId != null) { return RedirectToAction("Details", "Project", new { id = projectId }); }
-            else
-                return View();
+            await _fileService.Upload(model, projectId, assignmentId, uploadedBy);
+            return Redirect(projectId, assignmentId);
+        }
+        private RedirectToActionResult Redirect(int? projectId, int? assignmentId)
+        {
+            return assignmentId != null
+                ? RedirectToAction("Details", "Assignment", new { id = assignmentId })
+                : projectId != null
+                      ? RedirectToAction("Details", "Project", new { id = projectId })
+                    : RedirectToAction("Index", "Home");
         }
     }
 

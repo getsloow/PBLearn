@@ -5,11 +5,11 @@ namespace PBL.Services.Interfaces
 {
     public interface IAssignmentService
     {
-        Task<List<AssignmentViewModel>> GetAssignmentsByProjectId(int projectId);
-        Task<AssignmentViewModel> GetAssignment(int id);
-        Task<AssignmentModel> CreateAssignment(AssignmentCreateViewModel model);
-        Task<AssignmentModel> GradeAssignment(int assignmentId, float grade);
-        Task<bool> TurnInAssignment(int assignmentId);
-        Task<bool> RevertAssignment(int assignmentId);
+        Task<AssignmentModel?> GetAssignmentAsync(int? id);
+        Task GradeAsync(int assignmentId, float assignmentGrade);
+        Task CreateAsync(AssignmentModel model, int projectId);
+        Task TurnInAsync(int assignmentId);
+        Task RevertAsync(int assignmentId);
+
     }
 }
